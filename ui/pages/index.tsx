@@ -1,6 +1,85 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 
+const stories: Storyline[] = [
+  {
+    title: "How Floob came to power",
+    description: "A tale of mischief, cunning, and evil.",
+    blocks: [
+      {
+        text: `In the year 2142, Floob was 
+        a mere youngling of the Goober race in the Andromeda Galaxy,
+        Planet 0x23df943 in the Boober system. Before he took the 
+        terrifying name Floob and spread terror to the intergalaxies,
+        he was known as Floobydoo of the family Floobyooby.`,
+      },
+      {
+        text: "",
+      },
+      {
+        text: `Floobyooby was an aristocratic family that fell
+        from Imperial favor after the Oooomber Coup. Before Floob 
+        came to power and banned the song, the Goobers used to 
+        sing:`,
+      },
+      {
+        text: "",
+      },
+      {
+        text: `
+        Floobyooby
+        `,
+      },
+      {
+        text: `How you fell from grace`,
+      },
+      {
+        text: "All the Dobuudo of Ombula",
+      },
+      {
+        text: "Could not save you",
+      },
+      {
+        text: ""
+      },
+      {
+        text: `
+          There was a time in   
+        `   
+      }
+    ],
+  },
+];
+
+type Storyline = {
+  title: string;
+  description: string;
+  blocks: Block[];
+};
+
+// Would be cool to do rich text but that's going
+// to be harder
+type Block = {
+  text: string;
+};
+
+const StorylineView = ({ storyline }: { storyline: Storyline }) => {
+  const { title, description, blocks } = storyline;
+  return (
+    <div className="max-w-md">
+      <div className="py-4">
+        <p className="text-xl">{title.toUpperCase()}</p>
+        <p className="text-gray-400">{description.toUpperCase()}</p>
+      </div>
+      <div>
+        {blocks.map((block) => (
+          <div className="pb-1">{block.text}</div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const Home: NextPage = () => {
   return (
     <div>
@@ -18,6 +97,9 @@ const Home: NextPage = () => {
               Fl00b bots.
             </p>
           </div>
+        </div>
+        <div className="w-full flex items-center justify-center min-h-screen">
+          <StorylineView storyline={stories[0]} />
         </div>
       </div>
     </div>
