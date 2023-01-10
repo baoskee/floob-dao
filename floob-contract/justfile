@@ -1,0 +1,31 @@
+juno_container := 'juno_node_1' 
+
+deploy-local: restart-juno compile-wasm 
+    docker cp artifacts/floob_contract.wasm {{juno_container}}:/floob_contract.wasm
+    just upload-contract
+
+upload-contract:
+    docker exec -i {{juno_container}} \
+        junod tx wasm store "/floob_contract.wasm" \
+        --gas-prices 0.1ujunox --gas auto --gas-adjustment 1.3 \
+        -y -b block --chain-id testing \
+        --from validator --output json 
+ 
+restart-juno: 
+    docker kill {{juno_container}} || true 
+    docker rm {{juno_container}} || true 
+    docker run --rm -d \
+        --name {{juno_container}} \
+        -p 1317:1317 \
+        -p 26656:26656 \
+        -p 26657:26657 \
+        -e STAKE_TOKEN=ujunox \
+        -e UNSAFE_CORS=true \
+        ghcr.io/cosmoscontracts/juno:v11.0.0 \
+        ./setup_and_run.sh juno16g2rahf5846rxzp3fwlswy08fz8ccuwk03k57y
+ 
+compile-wasm:
+    docker run --rm -v "$(pwd)":/code \
+        --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
+        --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+        cosmwasm/rust-optimizer:0.12.8
