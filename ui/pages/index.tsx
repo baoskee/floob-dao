@@ -1,5 +1,6 @@
 import type { NextPage } from "next";
 import Head from "next/head";
+import { PlusIcon } from "../public/icons/PlusIcon";
 
 const stories: Storyline[] = [
   {
@@ -47,8 +48,8 @@ const HeaderView = ({ threads }: HeaderProps) => {
   return (
     <div className="flex">
       <div className="absolute -mx-16">
-        <div className="h-10 w-10 bg-cta rounded-full cursor-pointer">
-          {/* TODO: Icon missing */}
+        <div className="h-10 w-10 bg-cta rounded-full cursor-pointer flex items-center justify-center hover:opacity-80">
+          <PlusIcon width={24} height={24} strokeWidth={2} />
         </div>
       </div>
       {threads.map((t, i) => (
@@ -122,10 +123,8 @@ const Home: NextPage = () => {
             </div>
             <StorylineView storyline={stories[0]} />
             {/* Add new sub-thread */}
-            <div className="py-4">
-              <div className="bg-cta w-10 h-10 rounded-full">
-                 
-              </div>
+            <div className="py-4 -mx-12">
+              <div className="bg-cta w-10 h-10 rounded-full"></div>
             </div>
           </div>
         </div>
