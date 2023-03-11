@@ -47,7 +47,7 @@ const HeaderView = ({ threads }: HeaderProps) => {
   return (
     <div className="flex">
       <div className="absolute -mx-16">
-        <div className="h-12 w-12 bg-secondary rounded-full">
+        <div className="h-10 w-10 bg-cta rounded-full cursor-pointer">
           {/* TODO: Icon missing */}
         </div>
       </div>
@@ -121,6 +121,12 @@ const Home: NextPage = () => {
               </div>
             </div>
             <StorylineView storyline={stories[0]} />
+            {/* Add new sub-thread */}
+            <div className="py-4">
+              <div className="bg-cta w-10 h-10 rounded-full">
+                 
+              </div>
+            </div>
           </div>
         </div>
       </div>
