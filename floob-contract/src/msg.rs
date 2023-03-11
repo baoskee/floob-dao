@@ -10,10 +10,10 @@ pub enum ExecuteMsg {
         title: String,
         description: String
     },
-    CreateSubthread {
+    CreateThreadElem {
         thread_id: u64,
         content: String
-    }
+    },
 }
 
 #[cw_serde]

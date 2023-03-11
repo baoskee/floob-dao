@@ -8,7 +8,7 @@ use cosmwasm_std::{
 
 use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
-use crate::state::{SubThread, Thread, SUB_THREAD, SUB_THREAD_COUNT, THREADS, THREAD_COUNT};
+use crate::state::{ThreadElem, Thread, THREAD_ELEM, THREAD_ELEM_COUNT, THREADS, THREAD_COUNT};
 
 /*
 // version info for migration info
@@ -48,12 +48,12 @@ pub fn execute(
 
             Ok(Response::default())
         }
-        ExecuteMsg::CreateSubthread { thread_id, content } => {
+        ExecuteMsg::CreateThreadElem { thread_id, content } => {
             let subthread_id = advance_subthread_count(deps.storage, thread_id)?;
-            SUB_THREAD.save(
+            THREAD_ELEM.save(
                 deps.storage,
                 (thread_id, subthread_id),
-                &SubThread {
+                &ThreadElem {
                     content,
                     author: info.sender,
                 },
@@ -63,6 +63,9 @@ pub fn execute(
     }
 }
 
+/**
+ * TODO: cw-paginate might be a good idea here
+ */
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
     match msg {
@@ -94,13 +97,13 @@ fn advance_posts_count(store: &mut dyn Storage) -> StdResult<u64> {
 }
 
 fn advance_subthread_count(store: &mut dyn Storage, thread_id: u64) -> StdResult<u64> {
-    let lhs = SUB_THREAD_COUNT
+    let lhs = THREAD_ELEM_COUNT
         .may_load(store, thread_id)?
         .unwrap_or_default();
     let res = lhs.checked_add(1);
     match res {
         Some(id) => {
-            SUB_THREAD_COUNT.save(store, thread_id, &id)?;
+            THREAD_ELEM_COUNT.save(store, thread_id, &id)?;
             Ok(id)
         }
         None => Err(StdError::Overflow {

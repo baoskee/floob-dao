@@ -13,7 +13,7 @@ pub struct Thread {
 } 
 
 #[cw_serde]
-pub struct SubThread {
+pub struct ThreadElem {
     pub content: String,
     pub author: Addr 
 }
@@ -24,5 +24,5 @@ pub struct SubThread {
 pub const THREADS: Map<u64, Thread> = Map::new("posts");
 pub const THREAD_COUNT: Item<u64> = Item::new("posts_count");
 
-pub const SUB_THREAD: Map<(u64, u64), SubThread> = Map::new("sub_thread"); 
-pub const SUB_THREAD_COUNT: Map<u64, u64> = Map::new("sub_thread_count");
+pub const THREAD_ELEM: Map<(u64, u64), ThreadElem> = Map::new("sub_thread"); 
+pub const THREAD_ELEM_COUNT: Map<u64, u64> = Map::new("sub_thread_count");
