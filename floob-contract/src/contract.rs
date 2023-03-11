@@ -8,7 +8,7 @@ use cosmwasm_std::{
 
 use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
-use crate::state::{ThreadElem, Thread, THREAD_ELEM, THREAD_ELEM_COUNT, THREADS, THREAD_COUNT};
+use crate::state::{Thread, ThreadElem, THREADS, THREAD_COUNT, THREAD_ELEM, THREAD_ELEM_COUNT};
 
 /*
 // version info for migration info
@@ -72,6 +72,10 @@ pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
         QueryMsg::Thread { id } => {
             let post = THREADS.load(deps.storage, id)?;
             Ok(to_binary(&post)?)
+        }
+        QueryMsg::ThreadElem { thread_id, elem_id } => {
+            let elem = THREAD_ELEM.load(deps.storage, (thread_id, elem_id))?;
+            Ok(to_binary(&elem)?)
         }
     }
 }
