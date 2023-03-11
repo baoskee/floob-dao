@@ -8,7 +8,7 @@ use cosmwasm_std::{
 
 use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
-use crate::state::{Post, POSTS, POST_COUNT};
+use crate::state::{SubThread, Thread, SUB_THREAD, SUB_THREAD_COUNT, THREADS, THREAD_COUNT};
 
 /*
 // version info for migration info
@@ -30,14 +30,34 @@ pub fn instantiate(
 pub fn execute(
     deps: DepsMut,
     _env: Env,
-    _info: MessageInfo,
+    info: MessageInfo,
     msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
     match msg {
-        ExecuteMsg::CreatePost { title, description } => {
+        ExecuteMsg::CreateThread { title, description } => {
             let id = advance_posts_count(deps.storage)?;
-            POSTS.save(deps.storage, id, &Post { title, description })?;
+            THREADS.save(
+                deps.storage,
+                id,
+                &Thread {
+                    title,
+                    description,
+                    author: info.sender,
+                },
+            )?;
 
+            Ok(Response::default())
+        }
+        ExecuteMsg::CreateSubthread { thread_id, content } => {
+            let subthread_id = advance_subthread_count(deps.storage, thread_id)?;
+            SUB_THREAD.save(
+                deps.storage,
+                (thread_id, subthread_id),
+                &SubThread {
+                    content,
+                    author: info.sender,
+                },
+            )?;
             Ok(Response::default())
         }
     }
@@ -46,8 +66,8 @@ pub fn execute(
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
     match msg {
-        QueryMsg::Post { id } => {
-            let post = POSTS.load(deps.storage, id)?;
+        QueryMsg::Thread { id } => {
+            let post = THREADS.load(deps.storage, id)?;
             Ok(to_binary(&post)?)
         }
     }
@@ -56,11 +76,31 @@ pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
 /// MARK: Helpers
 
 fn advance_posts_count(store: &mut dyn Storage) -> StdResult<u64> {
-    let lhs = POST_COUNT.may_load(store)?.unwrap_or_default();
+    let lhs = THREAD_COUNT.may_load(store)?.unwrap_or_default();
     let res = lhs.checked_add(1);
     match res {
         Some(id) => {
-            POST_COUNT.save(store, &id)?;
+            THREAD_COUNT.save(store, &id)?;
+            Ok(id)
+        }
+        None => Err(StdError::Overflow {
+            source: OverflowError {
+                operation: cosmwasm_std::OverflowOperation::Add,
+                operand1: lhs.to_string(),
+                operand2: 1.to_string(),
+            },
+        }),
+    }
+}
+
+fn advance_subthread_count(store: &mut dyn Storage, thread_id: u64) -> StdResult<u64> {
+    let lhs = SUB_THREAD_COUNT
+        .may_load(store, thread_id)?
+        .unwrap_or_default();
+    let res = lhs.checked_add(1);
+    match res {
+        Some(id) => {
+            SUB_THREAD_COUNT.save(store, thread_id, &id)?;
             Ok(id)
         }
         None => Err(StdError::Overflow {
