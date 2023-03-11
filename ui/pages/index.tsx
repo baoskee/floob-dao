@@ -46,6 +46,11 @@ type HeaderProps = {
 const HeaderView = ({ threads }: HeaderProps) => {
   return (
     <div className="flex">
+      <div className="absolute -mx-16">
+        <div className="h-12 w-12 bg-secondary rounded-full">
+          {/* TODO: Icon missing */}
+        </div>
+      </div>
       {threads.map((t, i) => (
         <div
           key={i}
@@ -109,7 +114,6 @@ const Home: NextPage = () => {
       </Head>
       <div className="py-2">
         <div className="w-full flex items-center justify-center">
-
           <div className="flex flex-col">
             <div className="flex py-12">
               <div>
