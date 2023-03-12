@@ -55,7 +55,7 @@ const HeaderView = ({ threads }: HeaderProps) => {
       {threads.map((t, i) => (
         <div
           key={i}
-          className="text-xl font-bold text-primary cursor-pointer hover:opacity-80 max-w-[140px]"
+          className="text-xl font-bold text-primary cursor-pointer hover:opacity-80 max-w-[140px] hover:underline"
         >
           {t.title}
         </div>
@@ -123,12 +123,34 @@ const Home: NextPage = () => {
             </div>
             <StorylineView storyline={stories[0]} />
             {/* Add new sub-thread */}
-            <div className="py-4 -mx-12">
-              <div className="bg-cta w-10 h-10 rounded-full"></div>
+            <div className="py-4">
+              <div className="absolute -mx-8">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                </span>
+              </div>
+              {/* Input component */}
+              <div className="bg-[#1E1E1E] rounded-md">
+                <textarea
+                  cols={40}
+                  rows={2}
+                  placeholder="New subthread story..."
+                  className="w-full bg-[#1E1E1E] rounded-sm px-6 py-4 outline-none"
+                />
+                <div className="px-6 py-4">
+                <input
+                  type="button"
+                  value="Post"
+                  className="text-cta text-sm font-semibold rounded-sm outline-none cursor-pointer hover:opacity-80"
+                />
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+      <div className="py-24"></div>
     </div>
   );
 };
