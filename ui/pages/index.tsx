@@ -3,6 +3,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { useRecoilValueLoadable } from "recoil";
 import { walletAddrSel } from "../lib/atom";
+import { fmtWalletAddr } from "../lib/fmt";
 import { PlusIcon } from "../public/icons/PlusIcon";
 
 const stories: Storyline[] = [
@@ -119,7 +120,7 @@ const onConnectWalletClick = async () => {
 };
 
 const Home: NextPage = () => {
-  const { state, contents: walletAddr } = useRecoilValueLoadable(walletAddrSel)
+  const { state, contents: walletAddr } = useRecoilValueLoadable(walletAddrSel);
 
   return (
     <div>
@@ -139,12 +140,15 @@ const Home: NextPage = () => {
             <StorylineView storyline={stories[0]} />
             {/* Add new sub-thread */}
             <div className="py-4 relative">
-              <div className="absolute -mr-40 my-3 flex items-baseline gap-4 top-0 left-0">
+              <div className="absolute -ml-36 my-3 flex items-baseline gap-4 top-0 left-0">
                 <div
                   className="text-cta font-semibold text-base cursor-pointer hover:opacity-80"
                   onClick={walletAddr ? undefined : onConnectWalletClick}
                 >
-                  {`${walletAddr} (Your wallet)` ?? "Connect wallet"}
+                  {state == "hasValue" ? <div>
+                    <p>{fmtWalletAddr(walletAddr as string)}</p>
+                    <p>(Your wallet)</p>
+                  </div> : "Connect wallet"}
                 </div>
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
