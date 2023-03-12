@@ -174,5 +174,31 @@ mod tests {
         assert_eq!("Hello", value.title);
         assert_eq!("World", value.description);
         assert_eq!("creator", value.author);
+
+        // Create sub-thread
+        let msg = ExecuteMsg::CreateThreadElem {
+            thread_id: 0,
+            content: "Hello World".to_string(),
+        };
+        let info = mock_info("creator", &coins(1000, "earth"));
+        let res = execute(deps.as_mut(), mock_env(), info, msg).unwrap(); 
+        assert_eq!(0, res.messages.len());
+        // Check message attributes
+        assert_eq!(
+            res.attributes,
+            vec![
+                attr("action", "create_thread_elem"),
+                attr("thread_id", "0"),
+                attr("subthread_id", "0"),
+            ]
+        ); 
+        // Check query
+        let msg = QueryMsg::ThreadElem {
+            thread_id: 0,
+            elem_id: 0,
+        };
+        let res = query(deps.as_ref(), mock_env(), msg).unwrap();
+        let value: ThreadElem = from_binary(&res).unwrap();
+        assert_eq!("Hello World", value.content);
     }
 }
