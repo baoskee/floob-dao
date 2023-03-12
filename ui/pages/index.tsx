@@ -86,9 +86,9 @@ const StorylineView = ({ storyline }: { storyline: Storyline }) => {
       </div>
       <div>
         {blocks.map((block) => (
-          <div className="py-2">
+          <div className="relative py-2">
             {/* Decoration */}
-            <div className="absolute flex gap-4 items-baseline -mx-36">
+            <div className="absolute flex gap-4 items-baseline -ml-36 top-0 left-0 my-3">
               <div className="text-cta font-semibold text-base cursor-pointer hover:opacity-80">
                 juno03f...49l
               </div>
@@ -123,12 +123,15 @@ const Home: NextPage = () => {
             </div>
             <StorylineView storyline={stories[0]} />
             {/* Add new sub-thread */}
-            <div className="py-4">
-              <div className="absolute -mx-8">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-                </span>
+            <div className="py-4 relative">
+              <div className="absolute -ml-40 my-3 flex items-baseline gap-4 top-0 left-0">
+                  <div className="text-cta font-semibold text-base cursor-pointer hover:opacity-80">
+                    Connect wallet
+                  </div>
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                  </span>
               </div>
               {/* Input component */}
               <div className="bg-[#1E1E1E] rounded-md">
@@ -139,11 +142,11 @@ const Home: NextPage = () => {
                   className="w-full bg-[#1E1E1E] rounded-sm px-6 py-4 outline-none"
                 />
                 <div className="px-6 py-4">
-                <input
-                  type="button"
-                  value="Post"
-                  className="text-cta text-sm font-semibold rounded-sm outline-none cursor-pointer hover:opacity-80"
-                />
+                  <input
+                    type="button"
+                    value="Post"
+                    className="text-cta text-sm font-semibold rounded-sm outline-none cursor-pointer hover:opacity-80"
+                  />
                 </div>
               </div>
             </div>
