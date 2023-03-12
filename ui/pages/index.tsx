@@ -1,5 +1,8 @@
+import { getKeplrFromWindow } from "@keplr-wallet/stores";
 import type { NextPage } from "next";
 import Head from "next/head";
+import { useRecoilValueLoadable } from "recoil";
+import { walletAddrSel } from "../lib/atom";
 import { PlusIcon } from "../public/icons/PlusIcon";
 
 const stories: Storyline[] = [
@@ -105,7 +108,19 @@ const StorylineView = ({ storyline }: { storyline: Storyline }) => {
   );
 };
 
+const CHAIN_ID = "juno-1";
+
+const onConnectWalletClick = async () => {
+  const keplr = await getKeplrFromWindow();
+  if (!keplr)
+    return alert("Connect wallet failed. Download Keplr wallet to continue");
+
+  await keplr.enable(CHAIN_ID);
+};
+
 const Home: NextPage = () => {
+  const { state, contents: walletAddr } = useRecoilValueLoadable(walletAddrSel)
+
   return (
     <div>
       <Head>
@@ -124,14 +139,17 @@ const Home: NextPage = () => {
             <StorylineView storyline={stories[0]} />
             {/* Add new sub-thread */}
             <div className="py-4 relative">
-              <div className="absolute -ml-40 my-3 flex items-baseline gap-4 top-0 left-0">
-                  <div className="text-cta font-semibold text-base cursor-pointer hover:opacity-80">
-                    Connect wallet
-                  </div>
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-                  </span>
+              <div className="absolute -mr-40 my-3 flex items-baseline gap-4 top-0 left-0">
+                <div
+                  className="text-cta font-semibold text-base cursor-pointer hover:opacity-80"
+                  onClick={walletAddr ? undefined : onConnectWalletClick}
+                >
+                  {`${walletAddr} (Your wallet)` ?? "Connect wallet"}
+                </div>
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                </span>
               </div>
               {/* Input component */}
               <div className="bg-[#1E1E1E] rounded-md">
