@@ -19,7 +19,7 @@ pub struct ThreadElem {
 }
 
 /**
- * TODO: Is this a good way to store lists inside CosmWasm? 
+ * TODO(1): Is this a good way to store lists inside CosmWasm? 
  */
 pub const THREADS: Map<u64, Thread> = Map::new("posts");
 pub const THREAD_COUNT: Item<u64> = Item::new("posts_count");

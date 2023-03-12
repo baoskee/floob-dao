@@ -4,17 +4,15 @@ use cosmwasm_std::{
     to_binary, Binary, Deps, DepsMut, Env, MessageInfo, OverflowError, Response, StdError,
     StdResult, Storage,
 };
-// use cw2::set_contract_version;
+use cw2::set_contract_version;
 
 use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
 use crate::state::{Thread, ThreadElem, THREADS, THREAD_COUNT, THREAD_ELEM, THREAD_ELEM_COUNT};
 
-/*
 // version info for migration info
 const CONTRACT_NAME: &str = "crates.io:floob-contract";
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
-*/
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn instantiate(
@@ -23,6 +21,8 @@ pub fn instantiate(
     _info: MessageInfo,
     _msg: InstantiateMsg,
 ) -> Result<Response, ContractError> {
+    set_contract_version(_deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
+
     Ok(Response::default())
 }
 
@@ -64,7 +64,7 @@ pub fn execute(
 }
 
 /**
- * TODO: cw-paginate might be a good idea here
+ * TODO(1): cw-paginate might be a good idea here
  */
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
