@@ -130,7 +130,7 @@ mod tests {
     use super::*;
 
     use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
-    use cosmwasm_std::{coins, from_binary, CosmosMsg, WasmMsg, attr};
+    use cosmwasm_std::{attr, coins, from_binary, CosmosMsg, WasmMsg};
 
     #[test]
     fn test_proper_initialization() {
@@ -162,11 +162,8 @@ mod tests {
         // Check message attributes
         assert_eq!(
             res.attributes,
-            vec![
-                attr("action", "create_thread"),
-                attr("id", "0"),
-            ]
-        ); 
+            vec![attr("action", "create_thread"), attr("id", "0"),]
+        );
 
         let msg = QueryMsg::Thread { id: 0 };
         let res = query(deps.as_ref(), mock_env(), msg).unwrap();
@@ -181,7 +178,7 @@ mod tests {
             content: "Hello World".to_string(),
         };
         let info = mock_info("creator", &coins(1000, "earth"));
-        let res = execute(deps.as_mut(), mock_env(), info, msg).unwrap(); 
+        let res = execute(deps.as_mut(), mock_env(), info, msg).unwrap();
         assert_eq!(0, res.messages.len());
         // Check message attributes
         assert_eq!(
@@ -191,7 +188,7 @@ mod tests {
                 attr("thread_id", "0"),
                 attr("subthread_id", "0"),
             ]
-        ); 
+        );
         // Check query
         let msg = QueryMsg::ThreadElem {
             thread_id: 0,
@@ -200,5 +197,31 @@ mod tests {
         let res = query(deps.as_ref(), mock_env(), msg).unwrap();
         let value: ThreadElem = from_binary(&res).unwrap();
         assert_eq!("Hello World", value.content);
+
+        // Create second thread element
+        let msg = ExecuteMsg::CreateThreadElem {
+            thread_id: 0,
+            content: "Second thread element. Hope this works".to_string(),
+        };
+        let info = mock_info("creator", &coins(1000, "earth"));
+        let res = execute(deps.as_mut(), mock_env(), info, msg).unwrap();
+        assert_eq!(0, res.messages.len());
+        // Check message attributes
+        assert_eq!(
+            res.attributes,
+            vec![
+                attr("action", "create_thread_elem"),
+                attr("thread_id", "0"),
+                attr("subthread_id", "1"),
+            ]
+        );
+        // Check query
+        let msg = QueryMsg::ThreadElem {
+            thread_id: 0,
+            elem_id: 1,
+        };
+        let res = query(deps.as_ref(), mock_env(), msg).unwrap();
+        let value: ThreadElem = from_binary(&res).unwrap();
+        assert_eq!("Second thread element. Hope this works", value.content);
     }
 }
