@@ -89,8 +89,8 @@ const StorylineView = ({ storyline }: { storyline: Storyline }) => {
         <p className="text-secondary text-xl">{description}</p>
       </div>
       <div>
-        {blocks.map((block) => (
-          <div className="relative py-2">
+        {blocks.map((block, i) => (
+          <div key={i} className="relative py-2">
             {/* Decoration */}
             <div className="absolute flex gap-4 items-baseline -ml-36 top-0 left-0 my-3">
               <div className="text-cta font-semibold text-base cursor-pointer hover:opacity-80">
@@ -145,10 +145,14 @@ const Home: NextPage = () => {
                   className="text-cta font-semibold text-base cursor-pointer hover:opacity-80"
                   onClick={walletAddr ? undefined : onConnectWalletClick}
                 >
-                  {state == "hasValue" ? <div>
-                    <p>{fmtWalletAddr(walletAddr as string)}</p>
-                    <p>(Your wallet)</p>
-                  </div> : "Connect wallet"}
+                  {state == "hasValue" ? (
+                    <div>
+                      <p>{fmtWalletAddr(walletAddr as string)}</p>
+                      <p>(Your wallet)</p>
+                    </div>
+                  ) : (
+                    "Connect wallet"
+                  )}
                 </div>
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
