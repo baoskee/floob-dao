@@ -130,7 +130,7 @@ mod tests {
     use super::*;
 
     use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
-    use cosmwasm_std::{attr, coins, from_binary, CosmosMsg, WasmMsg};
+    use cosmwasm_std::{attr, coins, from_binary};
 
     #[test]
     fn test_proper_initialization() {
