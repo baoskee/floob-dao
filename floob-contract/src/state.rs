@@ -18,6 +18,8 @@ pub struct ThreadElem {
     pub author: Addr,
 }
 
+pub const ADMIN: Item<Addr> = Item::new("admin");
+
 /**
  * TODO(1): Is this a good way to store lists inside CosmWasm?
  */

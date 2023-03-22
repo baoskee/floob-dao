@@ -2,7 +2,9 @@ use crate::state::{Thread, ThreadElem};
 use cosmwasm_schema::{cw_serde, QueryResponses};
 
 #[cw_serde]
-pub struct InstantiateMsg {}
+pub struct InstantiateMsg {
+    pub admin: String,
+}
 
 #[cw_serde]
 pub enum ExecuteMsg {
