@@ -37,6 +37,10 @@ pub fn execute(
     info: MessageInfo,
     msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
+    let admin = ADMIN.load(deps.storage)?;
+    if info.sender != admin {
+        return Err(ContractError::Unauthorized {});
+    }
     match msg {
         ExecuteMsg::CreateThread { title, description } => {
             let id = advance_posts_count(deps.storage)?;
