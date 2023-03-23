@@ -181,6 +181,46 @@ mod tests {
     }
 
     #[test]
+    fn test_unauthorized() {
+        let mut deps = mock_dependencies();
+        // Instantiate contract
+        let msg = InstantiateMsg {
+            admin: "creator".to_string(),
+        };
+        let info = mock_info("creator", &coins(1000, "earth"));
+        instantiate(deps.as_mut(), mock_env(), info, msg).unwrap(); 
+        // Thread creation fails for non-admin
+        let msg = ExecuteMsg::CreateThread {
+            title: "Hello".to_string(),
+            description: "World".to_string(),
+            content: vec!["Hello World".to_string()],
+        };
+        let info = mock_info("non-admin", &coins(1000, "earth"));
+        let res = execute(deps.as_mut(), mock_env(), info, msg.clone());
+        match res {
+            Err(ContractError::Unauthorized {}) => {}
+            _ => panic!("Expected Unauthorized error"),
+        } 
+        // Thread creation works for admin
+        let info = mock_info("creator", &coins(1000, "earth"));
+        let res = execute(deps.as_mut(), mock_env(), info, msg).unwrap();
+        assert_eq!(0, res.messages.len());
+        // Thread edit fails for non-admin
+        let msg = ExecuteMsg::EditThread {
+            id: 0,
+            title: "Hello".to_string(),
+            description: "World".to_string(),
+            content: vec!["Hello World".to_string()],
+        };
+        let info = mock_info("non-admin", &coins(1000, "earth"));
+        let res = execute(deps.as_mut(), mock_env(), info, msg.clone());
+        match res {
+            Err(ContractError::Unauthorized {}) => {}
+            _ => panic!("Expected Unauthorized error"),
+        }
+    }
+
+    #[test]
     fn test_edit_thread() {
         let mut deps = mock_dependencies();
         let msg = InstantiateMsg {
