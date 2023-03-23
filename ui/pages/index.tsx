@@ -2,6 +2,7 @@ import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { getKeplrFromWindow } from "@keplr-wallet/stores";
 import type { NextPage } from "next";
 import Head from "next/head";
+import { DependencyList, useEffect, useState } from "react";
 import { PlusIcon } from "../public/icons/PlusIcon";
 
 const stories: Storyline[] = [
@@ -102,8 +103,6 @@ const StorylineView = ({ storyline }: { storyline: Storyline }) => {
   );
 };
 
-const CHAIN_ID = "juno-1";
-
 const onConnectWalletClick = async () => {
   const keplr = await getKeplrFromWindow();
   if (!keplr)
@@ -112,8 +111,11 @@ const onConnectWalletClick = async () => {
   await keplr.enable(CHAIN_ID);
 };
 
-const CONTRACT_ADDR = "";
+// MARK: Environmental variables
+const FLOOB_ADDR = "";
+const CHAIN_ID = "juno-1";
 
+// MARK: Smart contract Queries
 const getThreadData = async ({
   id,
   client,
@@ -121,12 +123,32 @@ const getThreadData = async ({
   id: string;
   client: CosmWasmClient;
 }) => {
-  const thread = await client.queryContractSmart(CONTRACT_ADDR, {
+  const thread = await client.queryContractSmart(FLOOB_ADDR, {
     get_thread: { id },
   });
   return thread as Thread;
 };
 
+const getThreads = async ({ client }: { client: CosmWasmClient }) => {
+  const threads = await client.queryContractSmart(FLOOB_ADDR, {
+    get_threads_created: {},
+  });
+  return threads;
+};
+
+// MARK: Hooks
+export const useAwaited = <T,>(f: () => Promise<T>, deps: DependencyList) => {
+  const [res, setRes] = useState<T>();
+  useEffect(() => {
+    (async () => {
+      setRes(await f());
+    })();
+  }, deps);
+
+  return res;
+};
+
+// MARK: View
 const Home: NextPage = () => {
   return (
     <div>
