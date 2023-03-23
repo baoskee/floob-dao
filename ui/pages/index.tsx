@@ -1,9 +1,6 @@
 import { getKeplrFromWindow } from "@keplr-wallet/stores";
 import type { NextPage } from "next";
 import Head from "next/head";
-import { useRecoilValueLoadable } from "recoil";
-import { walletAddrSel } from "../lib/atom";
-import { fmtWalletAddr } from "../lib/fmt";
 import { PlusIcon } from "../public/icons/PlusIcon";
 
 const stories: Storyline[] = [
@@ -30,22 +27,27 @@ const stories: Storyline[] = [
 ];
 
 type Thread = {
+  id: string;
   title: string;
+  description: string;
+  content: string[];
 };
+
 const THREADS: Thread[] = [
   {
+    id: "0",
     title: "How Floob came to power",
-  },
-  {
-    title: "How Floob grew up",
-  },
-  {
-    title: "The Hubble Mission",
+    description:
+      "A tale of mischief, cunning, and evil of the greatest villain in the Cosmos who-ever lived.",
+    content: [
+      `In the year 2142, Floob was 
+      `,
+    ],
   },
 ];
 
 type HeaderProps = {
-  threads: Thread[];
+  threads: { title: string; id: string }[];
 };
 
 const HeaderView = ({ threads }: HeaderProps) => {
@@ -91,7 +93,6 @@ const StorylineView = ({ storyline }: { storyline: Storyline }) => {
       <div>
         {blocks.map((block, i) => (
           <div key={i} className="relative py-2">
-           
             <div className="pb-1 leading-relaxed">{block.text}</div>
           </div>
         ))}
@@ -111,7 +112,6 @@ const onConnectWalletClick = async () => {
 };
 
 const Home: NextPage = () => {
-
   return (
     <div>
       <Head>
@@ -130,7 +130,6 @@ const Home: NextPage = () => {
             <StorylineView storyline={stories[0]} />
             {/* Add new sub-thread */}
             <div className="py-4 relative">
-             
               {/* Input component. Invisible for now */}
               <div className="bg-[#1E1E1E] rounded-md invisible">
                 <textarea
