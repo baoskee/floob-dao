@@ -8,9 +8,7 @@ use cw2::set_contract_version;
 
 use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
-use crate::state::{
-    Thread, ThreadElem, ADMIN, THREADS, THREAD_COUNT, THREAD_ELEM, THREAD_ELEM_COUNT,
-};
+use crate::state::{Thread, ADMIN, THREADS, THREAD_COUNT};
 
 // version info for migration info
 const CONTRACT_NAME: &str = "crates.io:floob-contract";
@@ -42,7 +40,11 @@ pub fn execute(
         return Err(ContractError::Unauthorized {});
     }
     match msg {
-        ExecuteMsg::CreateThread { title, description } => {
+        ExecuteMsg::CreateThread {
+            title,
+            description,
+            content,
+        } => {
             let id = advance_posts_count(deps.storage)?;
             THREADS.save(
                 deps.storage,
@@ -50,28 +52,13 @@ pub fn execute(
                 &Thread {
                     title,
                     description,
-                    author: info.sender,
+                    content,
                 },
             )?;
 
             Ok(Response::default()
                 .add_attribute("action", "create_thread")
                 .add_attribute("id", id.to_string()))
-        }
-        ExecuteMsg::CreateThreadElem { thread_id, content } => {
-            let subthread_id = advance_subthread_count(deps.storage, thread_id)?;
-            THREAD_ELEM.save(
-                deps.storage,
-                (thread_id, subthread_id),
-                &ThreadElem {
-                    content,
-                    author: info.sender,
-                },
-            )?;
-            Ok(Response::default()
-                .add_attribute("action", "create_thread_elem")
-                .add_attribute("thread_id", thread_id.to_string())
-                .add_attribute("subthread_id", subthread_id.to_string()))
         }
     }
 }
@@ -86,10 +73,6 @@ pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
             let post = THREADS.load(deps.storage, id)?;
             Ok(to_binary(&post)?)
         }
-        QueryMsg::ThreadElem { thread_id, elem_id } => {
-            let elem = THREAD_ELEM.load(deps.storage, (thread_id, elem_id))?;
-            Ok(to_binary(&elem)?)
-        }
     }
 }
 
@@ -101,26 +84,6 @@ fn advance_posts_count(store: &mut dyn Storage) -> StdResult<u64> {
     match res {
         Some(id) => {
             THREAD_COUNT.save(store, &id)?;
-            Ok(lhs)
-        }
-        None => Err(StdError::Overflow {
-            source: OverflowError {
-                operation: cosmwasm_std::OverflowOperation::Add,
-                operand1: lhs.to_string(),
-                operand2: 1.to_string(),
-            },
-        }),
-    }
-}
-
-fn advance_subthread_count(store: &mut dyn Storage, thread_id: u64) -> StdResult<u64> {
-    let lhs = THREAD_ELEM_COUNT
-        .may_load(store, thread_id)?
-        .unwrap_or_default();
-    let res = lhs.checked_add(1);
-    match res {
-        Some(id) => {
-            THREAD_ELEM_COUNT.save(store, thread_id, &id)?;
             Ok(lhs)
         }
         None => Err(StdError::Overflow {
@@ -167,6 +130,7 @@ mod tests {
         let msg = ExecuteMsg::CreateThread {
             title: "Hello".to_string(),
             description: "World".to_string(),
+            content: vec!["Hello World".to_string()],
         };
         let info = mock_info("creator", &coins(1000, "earth"));
         let res = execute(deps.as_mut(), mock_env(), info, msg).unwrap();
@@ -181,59 +145,7 @@ mod tests {
         let res = query(deps.as_ref(), mock_env(), msg).unwrap();
         let value: Thread = from_binary(&res).unwrap();
         assert_eq!("Hello", value.title);
-        assert_eq!("World", value.description);
-        assert_eq!("creator", value.author);
-
-        // Create sub-thread
-        let msg = ExecuteMsg::CreateThreadElem {
-            thread_id: 0,
-            content: "Hello World".to_string(),
-        };
-        let info = mock_info("creator", &coins(1000, "earth"));
-        let res = execute(deps.as_mut(), mock_env(), info, msg).unwrap();
-        assert_eq!(0, res.messages.len());
-        // Check message attributes
-        assert_eq!(
-            res.attributes,
-            vec![
-                attr("action", "create_thread_elem"),
-                attr("thread_id", "0"),
-                attr("subthread_id", "0"),
-            ]
-        );
-        // Check query
-        let msg = QueryMsg::ThreadElem {
-            thread_id: 0,
-            elem_id: 0,
-        };
-        let res = query(deps.as_ref(), mock_env(), msg).unwrap();
-        let value: ThreadElem = from_binary(&res).unwrap();
-        assert_eq!("Hello World", value.content);
-
-        // Create second thread element
-        let msg = ExecuteMsg::CreateThreadElem {
-            thread_id: 0,
-            content: "Second thread element. Hope this works".to_string(),
-        };
-        let info = mock_info("creator", &coins(1000, "earth"));
-        let res = execute(deps.as_mut(), mock_env(), info, msg).unwrap();
-        assert_eq!(0, res.messages.len());
-        // Check message attributes
-        assert_eq!(
-            res.attributes,
-            vec![
-                attr("action", "create_thread_elem"),
-                attr("thread_id", "0"),
-                attr("subthread_id", "1"),
-            ]
-        );
-        // Check query
-        let msg = QueryMsg::ThreadElem {
-            thread_id: 0,
-            elem_id: 1,
-        };
-        let res = query(deps.as_ref(), mock_env(), msg).unwrap();
-        let value: ThreadElem = from_binary(&res).unwrap();
-        assert_eq!("Second thread element. Hope this works", value.content);
+        assert_eq!("World", value.description); 
+        assert_eq!(vec!["Hello World".to_string()], value.content);
     }
 }
