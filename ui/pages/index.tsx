@@ -1,3 +1,4 @@
+import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { getKeplrFromWindow } from "@keplr-wallet/stores";
 import type { NextPage } from "next";
 import Head from "next/head";
@@ -109,6 +110,21 @@ const onConnectWalletClick = async () => {
     return alert("Connect wallet failed. Download Keplr wallet to continue");
 
   await keplr.enable(CHAIN_ID);
+};
+
+const CONTRACT_ADDR = "";
+
+const getThreadData = async ({
+  id,
+  client,
+}: {
+  id: string;
+  client: CosmWasmClient;
+}) => {
+  const thread = await client.queryContractSmart(CONTRACT_ADDR, {
+    get_thread: { id },
+  });
+  return thread as Thread;
 };
 
 const Home: NextPage = () => {
