@@ -207,7 +207,13 @@ mod tests {
             id: 0,
             title: "Hello".to_string(),
             description: "World".to_string(),
-            content: vec!["What", "is", "going", "on", "here?"]
+            content: vec![
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec dictum aliquam eros, eu molestie sapien dignissim eget. Nullam tincidunt orci in dolor fermentum suscipit. Sed non lectus non massa lobortis blandit. Sed eget purus quam. Nam euismod arcu eu ex aliquet hendrerit. Aliquam erat volutpat. Sed at nisi sit amet mauris fringilla tristique.",
+                "Praesent efficitur urna nec magna bibendum, eu iaculis nibh volutpat. Nam ac tellus et augue malesuada ullamcorper. Integer tincidunt auctor elit, ac dapibus ante. Nulla malesuada bibendum lectus vel tristique. Maecenas in faucibus turpis. Proin sed quam sapien. Duis rhoncus tincidunt dui, ac consectetur justo pellentesque vel.",
+                "Suspendisse potenti. Nulla facilisi. Suspendisse suscipit varius felis, vel tempor dolor consequat a. Sed eget lorem eu urna malesuada semper. Maecenas venenatis magna at nibh molestie luctus. Nam vel urna diam. Nunc in turpis id augue posuere commodo. Suspendisse auctor, massa quis malesuada tincidunt, magna sapien dignissim metus, sit amet finibus ipsum metus sit amet velit.",
+                "Vivamus a est libero. Nulla sed sapien eu nisl venenatis vestibulum non vel ipsum. Morbi sagittis turpis id massa tincidunt hendrerit. Ut pellentesque sapien vel leo cursus, at cursus massa eleifend. Fusce vel ante sed ipsum pellentesque lacinia vitae vel tellus. Integer quis urna eu justo finibus egestas.",
+                "Duis sit amet lorem ex. Pellentesque nec suscipit massa. Sed at nunc at sem facilisis hendrerit. Sed faucibus, nibh vel malesuada molestie, elit mi rhoncus sapien, ac facilisis est lorem vel ipsum. Nullam sit amet nulla nisl. Etiam suscipit consectetur lectus, sit amet maximus neque dapibus at. Sed at eleifend quam. Fusce pellentesque mauris enim, vel ultricies nisl fermentum in.",
+            ]
                 .iter()
                 .map(|s| s.to_string())
                 .collect(),
@@ -219,7 +225,13 @@ mod tests {
         let res = query(deps.as_ref(), mock_env(), msg).unwrap();
         let value: Thread = from_binary(&res).unwrap();
         assert_eq!(
-            vec!["What", "is", "going", "on", "here?"]
+            vec![
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec dictum aliquam eros, eu molestie sapien dignissim eget. Nullam tincidunt orci in dolor fermentum suscipit. Sed non lectus non massa lobortis blandit. Sed eget purus quam. Nam euismod arcu eu ex aliquet hendrerit. Aliquam erat volutpat. Sed at nisi sit amet mauris fringilla tristique.",
+                "Praesent efficitur urna nec magna bibendum, eu iaculis nibh volutpat. Nam ac tellus et augue malesuada ullamcorper. Integer tincidunt auctor elit, ac dapibus ante. Nulla malesuada bibendum lectus vel tristique. Maecenas in faucibus turpis. Proin sed quam sapien. Duis rhoncus tincidunt dui, ac consectetur justo pellentesque vel.",
+                "Suspendisse potenti. Nulla facilisi. Suspendisse suscipit varius felis, vel tempor dolor consequat a. Sed eget lorem eu urna malesuada semper. Maecenas venenatis magna at nibh molestie luctus. Nam vel urna diam. Nunc in turpis id augue posuere commodo. Suspendisse auctor, massa quis malesuada tincidunt, magna sapien dignissim metus, sit amet finibus ipsum metus sit amet velit.",
+                "Vivamus a est libero. Nulla sed sapien eu nisl venenatis vestibulum non vel ipsum. Morbi sagittis turpis id massa tincidunt hendrerit. Ut pellentesque sapien vel leo cursus, at cursus massa eleifend. Fusce vel ante sed ipsum pellentesque lacinia vitae vel tellus. Integer quis urna eu justo finibus egestas.",
+                "Duis sit amet lorem ex. Pellentesque nec suscipit massa. Sed at nunc at sem facilisis hendrerit. Sed faucibus, nibh vel malesuada molestie, elit mi rhoncus sapien, ac facilisis est lorem vel ipsum. Nullam sit amet nulla nisl. Etiam suscipit consectetur lectus, sit amet maximus neque dapibus at. Sed at eleifend quam. Fusce pellentesque mauris enim, vel ultricies nisl fermentum in.",
+            ]
                 .iter()
                 .map(|s| s.to_string())
                 .collect::<Vec<String>>(),
