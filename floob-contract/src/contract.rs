@@ -66,7 +66,9 @@ pub fn execute(
             description,
             content,
         } => {
-            if (id > THREAD_COUNT.load(deps.storage)?) {
+            let count = THREAD_COUNT.may_load(deps.storage)?.unwrap_or_default();
+            // Watch overflow here
+            if id + 1 > count {
                 return Err(ContractError::ThreadNotFound {});
             }
             THREADS.save(
@@ -85,9 +87,6 @@ pub fn execute(
     }
 }
 
-/**
- * TODO(1): cw-paginate might be a good idea here
- */
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
     match msg {
@@ -173,6 +172,58 @@ mod tests {
 
     #[test]
     fn test_edit_thread() {
+        let mut deps = mock_dependencies();
+        let msg = InstantiateMsg {
+            admin: "creator".to_string(),
+        };
+        let info = mock_info("creator", &coins(1000, "earth"));
+        instantiate(deps.as_mut(), mock_env(), info, msg).unwrap();
 
+        // Test edit fails on non-existent thread
+        let msg = ExecuteMsg::EditThread {
+            id: 0,
+            title: "Hello".to_string(),
+            description: "World".to_string(),
+            content: vec!["Hello World".to_string()],
+        };
+        let info = mock_info("creator", &coins(1000, "earth"));
+        let res = execute(deps.as_mut(), mock_env(), info, msg);
+        match res {
+            Err(ContractError::ThreadNotFound {}) => {}
+            _ => panic!("Expected ThreadNotFound error"),
+        }
+        // Create new thread
+        let msg = ExecuteMsg::CreateThread {
+            title: "Hello".to_string(),
+            description: "World".to_string(),
+
+            // Content is a vector of long paragraphs
+            content: vec!["Hello World".to_string()],
+        };
+        let info = mock_info("creator", &coins(1000, "earth"));
+        execute(deps.as_mut(), mock_env(), info, msg).unwrap();
+        // Edit thread to new long paragraphs
+        let msg = ExecuteMsg::EditThread {
+            id: 0,
+            title: "Hello".to_string(),
+            description: "World".to_string(),
+            content: vec!["What", "is", "going", "on", "here?"]
+                .iter()
+                .map(|s| s.to_string())
+                .collect(),
+        };
+        let info = mock_info("creator", &coins(1000, "earth"));
+        execute(deps.as_mut(), mock_env(), info, msg).unwrap();
+        // Assert content is updated
+        let msg = QueryMsg::Thread { id: 0 };
+        let res = query(deps.as_ref(), mock_env(), msg).unwrap();
+        let value: Thread = from_binary(&res).unwrap();
+        assert_eq!(
+            vec!["What", "is", "going", "on", "here?"]
+                .iter()
+                .map(|s| s.to_string())
+                .collect::<Vec<String>>(),
+            value.content
+        );
     }
 }
