@@ -91,16 +91,7 @@ const StorylineView = ({ storyline }: { storyline: Storyline }) => {
       <div>
         {blocks.map((block, i) => (
           <div key={i} className="relative py-2">
-            {/* Decoration */}
-            <div className="absolute flex gap-4 items-baseline -ml-36 top-0 left-0 my-3">
-              <div className="text-cta font-semibold text-base cursor-pointer hover:opacity-80">
-                juno03f...49l
-              </div>
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-              </span>
-            </div>
+           
             <div className="pb-1 leading-relaxed">{block.text}</div>
           </div>
         ))}
@@ -120,7 +111,6 @@ const onConnectWalletClick = async () => {
 };
 
 const Home: NextPage = () => {
-  const { state, contents: walletAddr } = useRecoilValueLoadable(walletAddrSel);
 
   return (
     <div>
@@ -140,27 +130,9 @@ const Home: NextPage = () => {
             <StorylineView storyline={stories[0]} />
             {/* Add new sub-thread */}
             <div className="py-4 relative">
-              <div className="absolute -ml-36 my-3 flex items-baseline gap-4 top-0 left-0">
-                <div
-                  className="text-cta font-semibold text-base cursor-pointer hover:opacity-80"
-                  onClick={walletAddr ? undefined : onConnectWalletClick}
-                >
-                  {state == "hasValue" ? (
-                    <div>
-                      <p>{fmtWalletAddr(walletAddr as string)}</p>
-                      <p>(Your wallet)</p>
-                    </div>
-                  ) : (
-                    "Connect wallet"
-                  )}
-                </div>
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-                </span>
-              </div>
-              {/* Input component */}
-              <div className="bg-[#1E1E1E] rounded-md">
+             
+              {/* Input component. Invisible for now */}
+              <div className="bg-[#1E1E1E] rounded-md invisible">
                 <textarea
                   cols={40}
                   rows={2}
