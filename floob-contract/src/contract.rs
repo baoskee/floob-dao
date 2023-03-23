@@ -288,5 +288,27 @@ mod tests {
         assert_eq!("Hello World", value[0].content[0]);
         assert_eq!("Hello World 2", value[1].content[0]);
         assert_eq!("Hello World 3", value[2].content[0]);
+
+        // Test query from start 1, end 2
+        let msg = QueryMsg::GetThreadsCreated { start: Some(1), end: Some(2) };
+        let res = query(deps.as_ref(), mock_env(), msg).unwrap();
+        let value: Vec<Thread> = from_binary(&res).unwrap();
+        assert_eq!(1, value.len());
+        assert_eq!("Hello World 2", value[0].content[0]);
+
+        // Test query start 1
+        let msg = QueryMsg::GetThreadsCreated { start: Some(1), end: None };
+        let res = query(deps.as_ref(), mock_env(), msg).unwrap();
+        let value: Vec<Thread> = from_binary(&res).unwrap();
+        assert_eq!(2, value.len());
+        assert_eq!("Hello World 2", value[0].content[0]);
+        assert_eq!("Hello World 3", value[1].content[0]);
+        // Test end 2 is exclusive
+        let msg = QueryMsg::GetThreadsCreated { start: None, end: Some(2) };
+        let res = query(deps.as_ref(), mock_env(), msg).unwrap();
+        let value: Vec<Thread> = from_binary(&res).unwrap();
+        assert_eq!(2, value.len());
+        assert_eq!("Hello World", value[0].content[0]);
+        assert_eq!("Hello World 2", value[1].content[0]);
     }
 }
