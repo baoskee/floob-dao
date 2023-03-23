@@ -248,4 +248,45 @@ mod tests {
             value.content
         );
     }
+
+    #[test]
+    fn test_get_threads_created() {
+        // Instantiate contract
+        let mut deps = mock_dependencies();
+        let msg = InstantiateMsg {
+            admin: "creator".to_string(),
+        };
+        let info = mock_info("creator", &coins(1000, "earth"));
+        instantiate(deps.as_mut(), mock_env(), info, msg).unwrap();
+        // Create multiple threads
+        let msg = ExecuteMsg::CreateThread {
+            title: "Hello".to_string(),
+            description: "World".to_string(),
+            content: vec!["Hello World".to_string()],
+        };
+        let info = mock_info("creator", &coins(1000, "earth"));
+        execute(deps.as_mut(), mock_env(), info, msg).unwrap();
+        let msg = ExecuteMsg::CreateThread {
+            title: "Hello".to_string(),
+            description: "World".to_string(),
+            content: vec!["Hello World 2".to_string()],
+        }; 
+        let info = mock_info("creator", &coins(1000, "earth"));
+        execute(deps.as_mut(), mock_env(), info, msg).unwrap();
+        let msg = ExecuteMsg::CreateThread {
+            title: "Hello".to_string(),
+            description: "World".to_string(),
+            content: vec!["Hello World 3".to_string()],
+        };
+        let info = mock_info("creator", &coins(1000, "earth"));
+        execute(deps.as_mut(), mock_env(), info, msg).unwrap();
+        // Assert content is updated
+        let msg = QueryMsg::GetThreadsCreated { start: None, end: None  };
+        let res = query(deps.as_ref(), mock_env(), msg).unwrap();        
+        let value: Vec<Thread> = from_binary(&res).unwrap();
+        assert_eq!(3, value.len());
+        assert_eq!("Hello World", value[0].content[0]);
+        assert_eq!("Hello World 2", value[1].content[0]);
+        assert_eq!("Hello World 3", value[2].content[0]);
+    }
 }
