@@ -18,12 +18,17 @@ pub enum ExecuteMsg {
         title: String,
         description: String,
         content: Vec<String>,
-    }
+    },
 }
 
 #[cw_serde]
 #[derive(QueryResponses)]
 pub enum QueryMsg {
     #[returns(Thread)]
-    Thread { id: u64 },
+    GetThread { id: u64 },
+    #[returns(Vec<Thread>)]
+    GetThreadsCreated {
+        start: Option<u64>,
+        end: Option<u64>,
+    },
 }

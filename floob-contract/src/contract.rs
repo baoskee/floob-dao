@@ -90,9 +90,19 @@ pub fn execute(
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
     match msg {
-        QueryMsg::Thread { id } => {
+        QueryMsg::GetThread { id } => {
             let post = THREADS.load(deps.storage, id)?;
             Ok(to_binary(&post)?)
+        },
+        QueryMsg::GetThreadsCreated { start, end } => {
+            let count = THREAD_COUNT.may_load(deps.storage)?.unwrap_or_default();
+            let start = start.unwrap_or(0);
+            let end = end.unwrap_or(count);
+            let mut threads = vec![];
+            for i in start..end {
+                threads.push(THREADS.load(deps.storage, i)?);
+            }
+            Ok(to_binary(&threads)?)
         }
     }
 }
@@ -162,7 +172,7 @@ mod tests {
             vec![attr("action", "create_thread"), attr("id", "0"),]
         );
 
-        let msg = QueryMsg::Thread { id: 0 };
+        let msg = QueryMsg::GetThread { id: 0 };
         let res = query(deps.as_ref(), mock_env(), msg).unwrap();
         let value: Thread = from_binary(&res).unwrap();
         assert_eq!("Hello", value.title);
@@ -221,7 +231,7 @@ mod tests {
         let info = mock_info("creator", &coins(1000, "earth"));
         execute(deps.as_mut(), mock_env(), info, msg).unwrap();
         // Assert content is updated
-        let msg = QueryMsg::Thread { id: 0 };
+        let msg = QueryMsg::GetThread { id: 0 };
         let res = query(deps.as_ref(), mock_env(), msg).unwrap();
         let value: Thread = from_binary(&res).unwrap();
         assert_eq!(
