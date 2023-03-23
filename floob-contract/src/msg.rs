@@ -13,6 +13,12 @@ pub enum ExecuteMsg {
         description: String,
         content: Vec<String>,
     },
+    EditThread {
+        id: u64,
+        title: String,
+        description: String,
+        content: Vec<String>,
+    }
 }
 
 #[cw_serde]

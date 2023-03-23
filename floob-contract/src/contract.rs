@@ -60,6 +60,28 @@ pub fn execute(
                 .add_attribute("action", "create_thread")
                 .add_attribute("id", id.to_string()))
         }
+        ExecuteMsg::EditThread {
+            id,
+            title,
+            description,
+            content,
+        } => {
+            if (id > THREAD_COUNT.load(deps.storage)?) {
+                return Err(ContractError::ThreadNotFound {});
+            }
+            THREADS.save(
+                deps.storage,
+                id,
+                &Thread {
+                    title,
+                    description,
+                    content,
+                },
+            )?;
+            Ok(Response::default()
+                .add_attribute("action", "edit_thread")
+                .add_attribute("id", id.to_string()))
+        }
     }
 }
 
@@ -145,7 +167,12 @@ mod tests {
         let res = query(deps.as_ref(), mock_env(), msg).unwrap();
         let value: Thread = from_binary(&res).unwrap();
         assert_eq!("Hello", value.title);
-        assert_eq!("World", value.description); 
+        assert_eq!("World", value.description);
         assert_eq!(vec!["Hello World".to_string()], value.content);
+    }
+
+    #[test]
+    fn test_edit_thread() {
+
     }
 }
