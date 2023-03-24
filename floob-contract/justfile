@@ -30,9 +30,9 @@ instantiate-contract:
         -y \
         -b block \
         --chain-id testing \
-        --output json 
-
-# TODO: Need to store contract address from this result to use in local environment 
+        --output json \
+        | jq '.logs[0].events[] | select(.type == "instantiate").attributes[] | select(.key == "_contract_address").value' \
+        > temp/contract_address.txt
  
 restart-juno: 
     docker kill {{juno_container}} || true 
