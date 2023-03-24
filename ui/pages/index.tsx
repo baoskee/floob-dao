@@ -5,48 +5,12 @@ import Head from "next/head";
 import { DependencyList, useEffect, useState } from "react";
 import { PlusIcon } from "../public/icons/PlusIcon";
 
-const stories: Storyline[] = [
-  {
-    title: "How Floob came to power",
-    description:
-      "A tale of mischief, cunning, and evil of the greatest villain in the Cosmos who-ever lived.",
-    blocks: [
-      {
-        text: `In the year 2142, Floob was 
-        a mere youngling of the Goober race in the Andromeda Galaxy,
-        Planet 0x23df943 in the Boober system. Before he took the 
-        terrifying name Floob and spread terror to the intergalaxies,
-        he was known as Floobydoo of the family Floobyooby.`,
-      },
-      {
-        text: `Floobyooby was an aristocratic family that fell
-        from Imperial favor after the Oooomber Coup. Before Floob 
-        came to power and banned the song, the Goobers used to 
-        sing:`,
-      },
-    ],
-  },
-];
-
 type Thread = {
-  id: string;
+  id: number;
   title: string;
   description: string;
   content: string[];
 };
-
-const THREADS: Thread[] = [
-  {
-    id: "0",
-    title: "How Floob came to power",
-    description:
-      "A tale of mischief, cunning, and evil of the greatest villain in the Cosmos who-ever lived.",
-    content: [
-      `In the year 2142, Floob was 
-      `,
-    ],
-  },
-];
 
 type HeaderProps = {
   threads: { title: string; id: string }[];
@@ -75,17 +39,17 @@ const HeaderView = ({ threads }: HeaderProps) => {
 type Storyline = {
   title: string;
   description: string;
-  blocks: Block[];
+  content: Block[];
 };
 
 // Would be cool to do rich text but that's going
 // to be harder
-type Block = {
-  text: string;
-};
+type Block = string;
 
-const StorylineView = ({ storyline }: { storyline: Storyline }) => {
-  const { title, description, blocks } = storyline;
+const StorylineView = ({ storyline }: { storyline?: Storyline }) => {
+  if (!storyline) return <div></div>;
+
+  const { title, description, content: blocks } = storyline;
   return (
     <div className="max-w-md">
       <div className="py-4">
@@ -95,7 +59,7 @@ const StorylineView = ({ storyline }: { storyline: Storyline }) => {
       <div>
         {blocks.map((block, i) => (
           <div key={i} className="relative py-2">
-            <div className="pb-1 leading-relaxed">{block.text}</div>
+            <div className="pb-1 leading-relaxed">{block}</div>
           </div>
         ))}
       </div>
@@ -125,7 +89,7 @@ const getThreadData = async ({
   id,
   client,
 }: {
-  id: string;
+  id: number;
   client: CosmWasmClient;
 }) => {
   const thread = await client.queryContractSmart(FLOOB_ADDR, {
@@ -155,12 +119,19 @@ export const useAwaited = <T,>(f: () => Promise<T>, deps: DependencyList) => {
 
 // MARK: View
 const Home: NextPage = () => {
+  const [threadId, setThreadId] = useState(0);
   const threads = useAwaited(async () => {
     const client = await CosmWasmClient.connect(RPC_HOST + ":" + RPC_PORT);
     const threads = await getThreads({ client });
-    console.log("Threads: ", threads);
+    console.log(threads);
     return threads;
   }, []);
+  const displayedThread = useAwaited(async () => {
+    const client = await CosmWasmClient.connect(RPC_HOST + ":" + RPC_PORT);
+    const thread = await getThreadData({ id: threadId, client });
+    console.log(thread);
+    return thread;
+  }, [threadId]);
 
   return (
     <div>
@@ -174,10 +145,10 @@ const Home: NextPage = () => {
           <div className="flex flex-col">
             <div className="flex py-12">
               <div>
-                <HeaderView threads={THREADS} />
+                <HeaderView threads={threads || []} />
               </div>
             </div>
-            <StorylineView storyline={stories[0]} />
+            <StorylineView storyline={displayedThread} />
             {/* Add new sub-thread */}
             <div className="py-4 relative">
               {/* Input component. Invisible for now */}
