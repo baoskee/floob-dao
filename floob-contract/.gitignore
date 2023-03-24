@@ -3,6 +3,9 @@
 /schema
 /artifacts
 
+# Environment
+.env
+
 # Docker files like code_id 
 /temp 
 

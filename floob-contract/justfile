@@ -4,6 +4,11 @@ docker_prefix := 'docker exec -i juno_node_1'
 code_id := `cat temp/code_id.txt 2> /dev/null || echo "no code id"`
 contract_addr := `cat temp/contract_address.txt 2> /dev/null || echo "no contract address"`
 
+set dotenv-load 
+
+serve: 
+    @echo "$DATABASE_D"
+
 deploy-local: restart-juno 
     {{docker_prefix}} apk add --no-cache jq
     just compile-wasm 
