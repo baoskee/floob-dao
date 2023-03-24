@@ -1,6 +1,7 @@
 juno_container := 'juno_node_1' 
 docker_prefix := 'docker exec -i juno_node_1'
-validator_addr := 'juno1rn8mwh34j98aynqtlw7gw8yr76p9aelyq35evz'
+# Note this file is local
+code_id := `cat temp/code_id.txt 2> /dev/null || echo "no code id"`
 
 deploy-local: restart-juno 
     {{docker_prefix}} apk add --no-cache jq
@@ -13,12 +14,15 @@ upload-contract:
         junod tx wasm store "/floob_contract.wasm" \
         --gas-prices 0.1ujunox --gas auto --gas-adjustment 1.3 \
         -y -b block --chain-id testing \
-        --from validator --output json 
+        --from validator --output json \
+        | jq '.logs[0].events[] | select(.type == "store_code").attributes[] | select(.key == "code_id").value' \
+        > temp/code_id.txt
 
 instantiate-contract:
-    {{docker_prefix}} junod tx wasm instantiate 1 '{ "admin": "juno1rn8mwh34j98aynqtlw7gw8yr76p9aelyq35evz" }' \
+    {{docker_prefix}} junod tx wasm instantiate {{code_id}} \
+        '{ "admin": "'"$(docker exec -i juno_node_1 junod keys show validator -a)"'" }' \
         --label "some contract" \
-        --admin $(docker exec -i juno_node_1 junod keys list --output json | jq -r '.[0].address') \
+        --admin $(docker exec -i juno_node_1 junod keys show validator -a) \
         --from validator \
         --gas-prices 0.1ujunox \
         --gas auto \
@@ -26,7 +30,9 @@ instantiate-contract:
         -y \
         -b block \
         --chain-id testing \
-        --output json
+        --output json 
+
+# TODO: Need to store contract address from this result to use in local environment 
  
 restart-juno: 
     docker kill {{juno_container}} || true 
