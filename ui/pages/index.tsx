@@ -112,8 +112,13 @@ const onConnectWalletClick = async () => {
 };
 
 // MARK: Environmental variables
-const FLOOB_ADDR = "";
-const CHAIN_ID = "juno-1";
+
+// This changes for everyone's local Docker env
+const FLOOB_ADDR =
+  "juno1y8tagmy897u5z4lx4dv36sy84rhyhqqgwcghxuj7pqjnzlxkgj3s3jcm32";
+const CHAIN_ID = "testing";
+const RPC_HOST = "http://localhost";
+const RPC_PORT = "26657";
 
 // MARK: Smart contract Queries
 const getThreadData = async ({
@@ -150,6 +155,13 @@ export const useAwaited = <T,>(f: () => Promise<T>, deps: DependencyList) => {
 
 // MARK: View
 const Home: NextPage = () => {
+  const threads = useAwaited(async () => {
+    const client = await CosmWasmClient.connect(RPC_HOST + ":" + RPC_PORT);
+    const threads = await getThreads({ client });
+    console.log("Threads: ", threads);
+    return threads;
+  }, []);
+
   return (
     <div>
       <Head>
