@@ -2,7 +2,9 @@ juno_container := 'juno_node_1'
 docker_prefix := 'docker exec -i juno_node_1'
 validator_addr := 'juno1rn8mwh34j98aynqtlw7gw8yr76p9aelyq35evz'
 
-deploy-local: restart-juno compile-wasm 
+deploy-local: restart-juno 
+    {{docker_prefix}} apt-get install jq 
+    just compile-wasm 
     docker cp artifacts/floob_contract.wasm {{juno_container}}:/floob_contract.wasm
     just upload-contract
 
@@ -14,9 +16,9 @@ upload-contract:
         --from validator --output json 
 
 instantiate-contract:
-    {{docker_prefix}} junod tx wasm instantiate 1 "{ \"admin\": \"juno1rn8mwh34j98aynqtlw7gw8yr76p9aelyq35evz\" }" \
+    {{docker_prefix}} junod tx wasm instantiate 1 '{ "admin": "juno1rn8mwh34j98aynqtlw7gw8yr76p9aelyq35evz" }' \
         --label "some contract" \
-        --admin validator \
+        --admin $(docker exec -i juno_node_1 junod keys list --output json | jq -r '.[0].address') \
         --from validator \
         --gas-prices 0.1ujunox \
         --gas auto \
@@ -44,3 +46,13 @@ compile-wasm:
         --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
         --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
         cosmwasm/rust-optimizer:0.12.8
+
+deploy-local-m1: restart-juno compile-wasm-m1
+    docker cp artifacts/floob_contract-aarch64.wasm {{juno_container}}:/floob_contract.wasm
+    just upload-contract
+
+compile-wasm-m1:
+    docker run --rm -v "$(pwd)":/code \
+        --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
+        --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+        cosmwasm/rust-optimizer-arm64:0.12.12
