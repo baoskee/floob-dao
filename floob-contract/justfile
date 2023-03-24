@@ -3,7 +3,7 @@ docker_prefix := 'docker exec -i juno_node_1'
 validator_addr := 'juno1rn8mwh34j98aynqtlw7gw8yr76p9aelyq35evz'
 
 deploy-local: restart-juno 
-    {{docker_prefix}} apt-get install jq 
+    {{docker_prefix}} apk add --no-cache jq
     just compile-wasm 
     docker cp artifacts/floob_contract.wasm {{juno_container}}:/floob_contract.wasm
     just upload-contract
