@@ -1,4 +1,6 @@
 juno_container := 'juno_node_1' 
+docker_prefix := 'docker exec -i juno_node_1'
+validator_addr := 'juno1rn8mwh34j98aynqtlw7gw8yr76p9aelyq35evz'
 
 deploy-local: restart-juno compile-wasm 
     docker cp artifacts/floob_contract.wasm {{juno_container}}:/floob_contract.wasm
@@ -12,9 +14,9 @@ upload-contract:
         --from validator --output json 
 
 instantiate-contract:
-    docker exec -i juno_node_1 junod tx wasm instantiate 1 "{}" \
+    {{docker_prefix}} junod tx wasm instantiate 1 "{ \"admin\": \"juno1rn8mwh34j98aynqtlw7gw8yr76p9aelyq35evz\" }" \
         --label "some contract" \
-        --admin juno1tmqxjg8djr26zlu2hsx88ekkaprvrn2wft9du0 \
+        --admin validator \
         --from validator \
         --gas-prices 0.1ujunox \
         --gas auto \
