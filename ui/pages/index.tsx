@@ -79,7 +79,7 @@ const onConnectWalletClick = async () => {
 
 // This changes for everyone's local Docker env
 const FLOOB_ADDR =
-  "juno1y8tagmy897u5z4lx4dv36sy84rhyhqqgwcghxuj7pqjnzlxkgj3s3jcm32";
+  "juno1yvgh8xeju5dyr0zxlkvq09htvhjj20fncp5g58np4u25g8rkpgjsgz0ylr";
 const CHAIN_ID = "testing";
 const RPC_HOST = "http://localhost";
 const RPC_PORT = "26657";

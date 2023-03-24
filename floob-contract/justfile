@@ -6,8 +6,9 @@ contract_addr := `cat temp/contract_address.txt 2> /dev/null || echo "no contrac
 
 set dotenv-load 
 
-serve: 
-    @echo "$DATABASE_D"
+chain_id := `echo $CHAIN_ID`
+denom := `echo $DENOM`
+key_name := `echo $KEY_NAME`
 
 deploy-local: restart-juno 
     {{docker_prefix}} apk add --no-cache jq
@@ -18,38 +19,39 @@ deploy-local: restart-juno
 upload-contract:
     docker exec -i {{juno_container}} \
         junod tx wasm store "/floob_contract.wasm" \
-        --gas-prices 0.1ujunox --gas auto --gas-adjustment 1.3 \
-        -y -b block --chain-id testing \
-        --from validator --output json \
-        | jq '.logs[0].events[] | select(.type == "store_code").attributes[] | select(.key == "code_id").value' \
+        --gas-prices 0.1{{denom}} --gas auto --gas-adjustment 1.3 \
+        -y -b block \
+        --chain-id {{chain_id}} \
+        --from {{key_name}} --output json \
+        | jq -r '.logs[0].events[] | select(.type == "store_code").attributes[] | select(.key == "code_id").value' \
         > temp/code_id.txt
 
 instantiate-contract:
     {{docker_prefix}} junod tx wasm instantiate {{code_id}} \
         '{ "admin": "'"$(docker exec -i juno_node_1 junod keys show validator -a)"'" }' \
         --label "some contract" \
-        --admin $(docker exec -i juno_node_1 junod keys show validator -a) \
-        --from validator \
+        --admin $(docker exec -i juno_node_1 junod keys show {{key_name}} -a) \
+        --from {{key_name}} \
         --gas-prices 0.1ujunox \
         --gas auto \
         --gas-adjustment 1.3 \
         -y \
         -b block \
-        --chain-id testing \
+        --chain-id {{chain_id}} \
         --output json \
-        | jq '.logs[0].events[] | select(.type == "instantiate").attributes[] | select(.key == "_contract_address").value' \
+        | jq -r '.logs[0].events[] | select(.type == "instantiate").attributes[] | select(.key == "_contract_address").value' \
         > temp/contract_address.txt
 
 populate-testing:
     {{docker_prefix}} junod tx wasm execute {{contract_addr}} \
         '{"create_thread": { "title": "Hello Floob", "description": "How Floob started", "content": ["Uh oh", "This works?"] }}' \
-        --from validator \
-        --gas-prices 0.1ujunox \
+        --from {{key_name}} \
+        --gas-prices 0.1{{denom}} \
         --gas auto \
         --gas-adjustment 1.3 \
         -y \
         -b block \
-        --chain-id testing \
+        --chain-id {{chain_id}} \
         --output json
  
 restart-juno: 
