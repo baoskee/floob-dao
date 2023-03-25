@@ -9,6 +9,14 @@ set dotenv-load
 chain_id := `echo $CHAIN_ID`
 denom := `echo $DENOM`
 key_name := `echo $KEY_NAME`
+# for testnet deployments
+node_flag := `
+if [ -z "${NODE+x}" ]; then
+    echo ""
+else
+    echo "--node $NODE"
+fi
+`
 
 deploy-local: restart-juno 
     {{docker_prefix}} apk add --no-cache jq
@@ -81,3 +89,11 @@ compile-wasm-m1:
         --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
         --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
         cosmwasm/rust-optimizer-arm64:0.12.12
+
+# Testnet messing around
+query_msgs:
+    junod query wasm contract-state smart \
+        juno1vzm5qzqwhvazedkt3z9y6j73z68scwr6kwjf8wjfr6drpf9wcxzqnrjf8p \
+        '{ "get_thread": { "id": 0 } }' \
+        {{node_flag}} \
+        --output json 
