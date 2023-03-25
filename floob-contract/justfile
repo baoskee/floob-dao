@@ -14,7 +14,6 @@ deploy-local: restart-juno
     {{docker_prefix}} apk add --no-cache jq
     just compile-wasm 
     docker cp artifacts/floob_contract.wasm {{juno_container}}:/floob_contract.wasm
-    just upload-contract
 
 upload-contract:
     docker exec -i {{juno_container}} \
