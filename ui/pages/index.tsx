@@ -58,8 +58,8 @@ const StorylineView = ({ storyline }: { storyline?: Storyline }) => {
       </div>
       <div>
         {blocks.map((block, i) => (
-          <div key={i} className="relative py-2">
-            <div className="pb-1 leading-relaxed">{block}</div>
+          <div key={i} className="relative">
+            <div className="pb-2 leading-relaxed">{block}</div>
           </div>
         ))}
       </div>
