@@ -79,10 +79,10 @@ const onConnectWalletClick = async () => {
 
 // This changes for everyone's local Docker env
 const FLOOB_ADDR =
-  "juno1yvgh8xeju5dyr0zxlkvq09htvhjj20fncp5g58np4u25g8rkpgjsgz0ylr";
-const CHAIN_ID = "testing";
-const RPC_HOST = "http://localhost";
-const RPC_PORT = "26657";
+  "juno1sz6rh5av98ed9d5edejv8vgv2t64schjvwrcwclw309r6hvy6ztssy8nqk";
+const CHAIN_ID = "juno-1";
+const RPC_HOST = "https://rpc-juno.itastakers.com";
+const RPC_PORT = "443";
 
 // MARK: Smart contract Queries
 const getThreadData = async ({
