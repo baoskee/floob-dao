@@ -10,6 +10,7 @@ chain_id := `echo $CHAIN_ID`
 denom := `echo $DENOM`
 key_name := `echo $KEY_NAME`
 # for testnet deployments
+# todo: if there's local env variable, it fucks it up
 node_flag := `
 if [ -z "${NODE+x}" ]; then
     echo ""
