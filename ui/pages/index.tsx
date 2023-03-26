@@ -69,7 +69,7 @@ const WhatIsFloobZone = () => (
 
     <h1 className="text-primary text-2xl font-bold">What is FloobDAO?</h1>
     <p>
-      FloobDAO is a <Link href="https://daodao.zone">Da0_Da0</Link> DAO that is
+      FloobDAO is a <Link href="https://daodao.zone">DAO DAO</Link> DAO that is
       governed by FloobDAO token holders. FloobDAO token holders can create and
       edit stories around the Galactic Floob storyline by creating a proposal
       and getting it passed.
