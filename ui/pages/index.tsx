@@ -18,21 +18,22 @@ type HeaderProps = {
   selected?: number;
 };
 
+const Link = ({ href, children }: { href: string; children: string }) => (
+  <a href={href} target="_blank">
+    {children}
+  </a>
+);
+
 const WhatIsFloobZone = () => (
   <div className="flex flex-col gap-2">
     <h1 className="text-primary text-2xl font-bold">What is Floob.zone?</h1>
     <p>
       Floob is a community-driven, decentralized, and{" "}
-      <a href="https://github.com/baoskee/floob-dao" target="_blank">
-        open-source{" "}
-      </a>
+      <Link href="https://github.com/baoskee/floob-dao">open-source</Link>{" "}
       story-telling smart contract application controlled by{" "}
-      <a
-        href="https://daodao.zone/dao/juno15aka2ufg4xg6et76q3dg95q798eusphft0yuddl764kc2wfkxaxs43r32f#proposals"
-        target="_blank"
-      >
+      <Link href="https://daodao.zone/dao/juno15aka2ufg4xg6et76q3dg95q798eusphft0yuddl764kc2wfkxaxs43r32f#proposals">
         FloobDAO
-      </a>
+      </Link>
       .
     </p>
     <p>
@@ -45,7 +46,8 @@ const WhatIsFloobZone = () => (
       evolving the Floob universe to their liking.
     </p>
     <p>
-      You can read the first story, {' '}<a> "How Floob came to power"</a>.
+      You can read the first story,{" "}
+      <Link href="">"How Floob came to power"</Link>.
     </p>
     <p>
       This project is created and maintained by <a>baoskee</a>. It is intended
@@ -58,13 +60,10 @@ const WhatIsFloobZone = () => (
 
     <h1 className="text-primary text-2xl font-bold">What is FloobDAO?</h1>
     <p>
-      FloobDAO is a{" "}
-      <a href="https://daodao.zone" target="_blank">
-        Da0_Da0
-      </a>{" "}
-      DAO that is governed by FloobDAO token holders. FloobDAO token holders can
-      create and edit stories around the Galactic Floob storyline by creating a
-      proposal and getting it passed.
+      FloobDAO is a <Link href="https://daodao.zone">Da0_Da0</Link> DAO that is
+      governed by FloobDAO token holders. FloobDAO token holders can create and
+      edit stories around the Galactic Floob storyline by creating a proposal
+      and getting it passed.
     </p>
   </div>
 );
