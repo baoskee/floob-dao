@@ -1,8 +1,8 @@
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { getKeplrFromWindow } from "@keplr-wallet/stores";
 import type { NextPage } from "next";
-import Head from "next/head";
 import { DependencyList, FC, useEffect, useState } from "react";
+import Head from "next/head";
 
 type Thread = {
   id: number;
@@ -12,7 +12,7 @@ type Thread = {
 };
 
 type HeaderProps = {
-  threads: { title: string; id: string }[];
+  titles: string[];
   onHeaderClick: (headIdx: number) => void;
   selected?: number;
 };
@@ -43,19 +43,20 @@ const WhatIsFloobZone = () => (
   </div>
 );
 
-const HeaderView: FC<HeaderProps> = ({ threads }) => {
+const HeaderView: FC<HeaderProps> = ({ titles, selected, onHeaderClick }) => {
   return (
     <div className="flex flex-row px-8 py-4 bg-black items-baseline gap-2">
-      <div className="flex flex-row gap-8 items-baseline text-sm font-medium">
-        <div>What is Floob.zone and FloobDAO?</div>
-        <div>Stories::</div>
+      <div className="flex flex-row gap-8 items-baseline text-sm font-medium overflow-x-scroll">
+        {titles.map((t, i) => (
+          <div
+            key={i}
+            onClick={() => onHeaderClick(i)}
+            className="text-sm text-primary cursor-pointer"
+          >
+            {t}
+          </div>
+        ))}
       </div>
-
-      {threads.map((t, i) => (
-        <div key={i} className="text-sm text-primary cursor-pointer">
-          {t.title}
-        </div>
-      ))}
     </div>
   );
 };
@@ -145,17 +146,21 @@ export const useAwaited = <T,>(f: () => Promise<T>, deps: DependencyList) => {
 
 // MARK: View
 const Home: NextPage = () => {
-  const [threadId, setThreadId] = useState(0);
+  const [headerIdx, setHeaderIdx] = useState(0);
   const threads = useAwaited(async () => {
     const client = await CosmWasmClient.connect(RPC_HOST + ":" + RPC_PORT);
     const threads = await getThreads({ client });
-    return threads;
+    return threads as Thread[];
   }, []);
+
   const displayedThread = useAwaited(async () => {
     const client = await CosmWasmClient.connect(RPC_HOST + ":" + RPC_PORT);
-    const thread = await getThreadData({ id: threadId, client });
+    const thread = await getThreadData({
+      id: Math.max(headerIdx - 1, 0),
+      client,
+    });
     return thread;
-  }, [threadId]);
+  }, [headerIdx]);
 
   return (
     <div>
@@ -166,9 +171,16 @@ const Home: NextPage = () => {
       </Head>
 
       <HeaderView
-        threads={threads ?? []}
-        selected={threadId}
-        onHeaderClick={() => {}}
+        titles={
+          threads
+            ? [
+                "What is Floob.zone and FloobDAO?",
+                ...threads.map((t) => t.title),
+              ]
+            : ["What is Floob.zone and FloobDAO?"]
+        }
+        selected={headerIdx}
+        onHeaderClick={(i) => setHeaderIdx(i)}
       />
       <div className="py-12">
         <div className="w-full flex items-center justify-center">
