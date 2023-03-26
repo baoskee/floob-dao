@@ -55,7 +55,7 @@ const HeaderView: FC<HeaderProps> = ({ titles, selected, onHeaderClick }) => {
             onClick={() => onHeaderClick(i)}
             className={clsx(
               "text-sm text-primary cursor-pointer",
-              "opacity-50 hover:opacity-100 transition-opacity 100ms ease-in-out ",
+              "opacity-50 hover:opacity-100 transition-opacity 100ms ease-in-out",
               selected == i && "opacity-100"
             )}
           >
@@ -197,25 +197,6 @@ const Home: NextPage = () => {
               ) : (
                 <StorylineView storyline={displayedThread} />
               )}
-            </div>
-            {/* Add new sub-thread */}
-            <div className="py-4 relative">
-              {/* Input component. Invisible for now */}
-              <div className="bg-[#1E1E1E] rounded-md invisible">
-                <textarea
-                  cols={40}
-                  rows={2}
-                  placeholder="New subthread story..."
-                  className="w-full bg-[#1E1E1E] rounded-sm px-6 py-4 outline-none"
-                />
-                <div className="px-6 py-4">
-                  <input
-                    type="button"
-                    value="Post"
-                    className="text-cta text-sm font-semibold rounded-sm outline-none cursor-pointer hover:opacity-80"
-                  />
-                </div>
-              </div>
             </div>
           </div>
         </div>
