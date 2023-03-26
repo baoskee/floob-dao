@@ -3,6 +3,7 @@ import { getKeplrFromWindow } from "@keplr-wallet/stores";
 import type { NextPage } from "next";
 import { DependencyList, FC, useEffect, useState } from "react";
 import Head from "next/head";
+import clsx from "clsx";
 
 type Thread = {
   id: number;
@@ -51,7 +52,11 @@ const HeaderView: FC<HeaderProps> = ({ titles, selected, onHeaderClick }) => {
           <div
             key={i}
             onClick={() => onHeaderClick(i)}
-            className="text-sm text-primary cursor-pointer"
+            className={clsx(
+              "text-sm text-primary cursor-pointer",
+              "opacity-50 hover:opacity-100 transition-opacity 100ms ease-in-out ",
+              selected == i && "opacity-100"
+            )}
           >
             {t}
           </div>
