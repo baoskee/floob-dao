@@ -22,6 +22,7 @@ const Link = ({ href, children }: { href: string; children: string }) => (
   <a
     href={href}
     target="_blank"
+    rel="noreferrer" 
     className={clsx(
       "opacity-60 transition-opacity 100ms ease-in-out",
       "hover:opacity-100"
@@ -54,7 +55,7 @@ const WhatIsFloobZone = () => (
     </p>
     <p>
       You can read the first story,{" "}
-      <Link href="https://floob.zone/0">"How Floob came to power"</Link>.
+      <Link href="https://localhost:3000?id=0">{"How Floob came to power"}</Link>.
     </p>
     <p>
       This project is created and maintained by{" "}
