@@ -19,7 +19,7 @@ type HeaderProps = {
 };
 
 const WhatIsFloobZone = () => (
-  <div>
+  <div className="flex flex-col gap-2">
     <h1 className="text-primary text-2xl font-bold">What is Floob.zone?</h1>
     <p>
       Floob is a community-driven, decentralized, and open-source story-telling
@@ -34,8 +34,9 @@ const WhatIsFloobZone = () => (
       You can read the first story "How Floob came to power" here. This project
       is created and maintained by baoskee.
     </p>
+    <p className="py-2" />
 
-    <h1>What is FloobDAO?</h1>
+    <h1 className="text-primary text-2xl font-bold">What is FloobDAO?</h1>
     <p>
       FloobDAO is a Da0_Da0 DAO that is governed by FloobDAO token holders.
       FloobDAO token holders can create and edit stories around the Galactic
@@ -46,7 +47,7 @@ const WhatIsFloobZone = () => (
 
 const HeaderView: FC<HeaderProps> = ({ titles, selected, onHeaderClick }) => {
   return (
-    <div className="flex flex-row px-8 py-4 bg-black items-baseline gap-2">
+    <div className="flex flex-row px-8 py-4 bg-black items-baseline gap-2 overflow-x-scroll">
       <div className="flex flex-row gap-8 items-baseline text-sm font-medium overflow-x-scroll">
         {titles.map((t, i) => (
           <div
@@ -190,7 +191,13 @@ const Home: NextPage = () => {
       <div className="py-12">
         <div className="w-full flex items-center justify-center">
           <div className="flex flex-col">
-            <StorylineView storyline={displayedThread} />
+            <div className="max-w-lg">
+              {headerIdx == 0 ? (
+                <WhatIsFloobZone />
+              ) : (
+                <StorylineView storyline={displayedThread} />
+              )}
+            </div>
             {/* Add new sub-thread */}
             <div className="py-4 relative">
               {/* Input component. Invisible for now */}
