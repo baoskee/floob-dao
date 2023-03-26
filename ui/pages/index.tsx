@@ -19,7 +19,14 @@ type HeaderProps = {
 };
 
 const Link = ({ href, children }: { href: string; children: string }) => (
-  <a href={href} target="_blank">
+  <a
+    href={href}
+    target="_blank"
+    className={clsx(
+      "opacity-60 transition-opacity 100ms ease-in-out",
+      "hover:opacity-100"
+    )}
+  >
     {children}
   </a>
 );
@@ -47,11 +54,12 @@ const WhatIsFloobZone = () => (
     </p>
     <p>
       You can read the first story,{" "}
-      <Link href="">"How Floob came to power"</Link>.
+      <Link href="https://floob.zone/0">"How Floob came to power"</Link>.
     </p>
     <p>
-      This project is created and maintained by <a>baoskee</a>. It is intended
-      to be a fun and educational project personally, and an experiment in
+      This project is created and maintained by{" "}
+      <Link href="https://twitter.com/baoskee">baoskee</Link>. It is intended to
+      be a fun and educational project personally, and an experiment in
       decentralized story-telling for the Juno community. Never buy FLOOB, just
       ask and we will mint.
     </p>
