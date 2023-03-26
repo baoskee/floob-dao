@@ -22,25 +22,49 @@ const WhatIsFloobZone = () => (
   <div className="flex flex-col gap-2">
     <h1 className="text-primary text-2xl font-bold">What is Floob.zone?</h1>
     <p>
-      Floob is a community-driven, decentralized, and open-source story-telling
-      smart contract application controlled by FloobDAO.
+      Floob is a community-driven, decentralized, and{" "}
+      <a href="https://github.com/baoskee/floob-dao" target="_blank">
+        open-source{" "}
+      </a>
+      story-telling smart contract application controlled by{" "}
+      <a
+        href="https://daodao.zone/dao/juno15aka2ufg4xg6et76q3dg95q798eusphft0yuddl764kc2wfkxaxs43r32f#proposals"
+        target="_blank"
+      >
+        FloobDAO
+      </a>
+      .
     </p>
     <p>
-      Members can propose and vote on new stories and sub-stories to be added to
-      this website. The FloobDAO token holders can also vote on the direction of
-      the story, evolving the Floob universe to their liking.
+      Members can propose and vote on new stories and sub-stories to be
+      immortalized on-chain forever. The stories on this website are generated
+      from a smart contract on Juno mainnet.
     </p>
     <p>
-      You can read the first story "How Floob came to power" here. This project
-      is created and maintained by baoskee.
+      The FloobDAO token holders can vote on the direction of the story,
+      evolving the Floob universe to their liking.
     </p>
+    <p>
+      You can read the first story, {' '}<a> "How Floob came to power"</a>.
+    </p>
+    <p>
+      This project is created and maintained by <a>baoskee</a>. It is intended
+      to be a fun and educational project personally, and an experiment in
+      decentralized story-telling for the Juno community. Never buy FLOOB, just
+      ask and we will mint.
+    </p>
+
     <p className="py-2" />
 
     <h1 className="text-primary text-2xl font-bold">What is FloobDAO?</h1>
     <p>
-      FloobDAO is a Da0_Da0 DAO that is governed by FloobDAO token holders.
-      FloobDAO token holders can create and edit stories around the Galactic
-      Floob storyline by creating a proposal.
+      FloobDAO is a{" "}
+      <a href="https://daodao.zone" target="_blank">
+        Da0_Da0
+      </a>{" "}
+      DAO that is governed by FloobDAO token holders. FloobDAO token holders can
+      create and edit stories around the Galactic Floob storyline by creating a
+      proposal and getting it passed.
     </p>
   </div>
 );
