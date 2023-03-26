@@ -3,7 +3,6 @@ import { getKeplrFromWindow } from "@keplr-wallet/stores";
 import type { NextPage } from "next";
 import Head from "next/head";
 import { DependencyList, FC, useEffect, useState } from "react";
-import { PlusIcon } from "../public/icons/PlusIcon";
 
 type Thread = {
   id: number;
@@ -14,15 +13,41 @@ type Thread = {
 
 type HeaderProps = {
   threads: { title: string; id: string }[];
-  selected: number;
+  onHeaderClick: (headIdx: number) => void;
+  selected?: number;
 };
+
+const WhatIsFloobZone = () => (
+  <div>
+    <h1 className="text-primary text-2xl font-bold">What is Floob.zone?</h1>
+    <p>
+      Floob is a community-driven, decentralized, and open-source story-telling
+      smart contract application controlled by FloobDAO.
+    </p>
+    <p>
+      Members can propose and vote on new stories and sub-stories to be added to
+      this website. The FloobDAO token holders can also vote on the direction of
+      the story, evolving the Floob universe to their liking.
+    </p>
+    <p>
+      You can read the first story "How Floob came to power" here. This project
+      is created and maintained by baoskee.
+    </p>
+
+    <h1>What is FloobDAO?</h1>
+    <p>
+      FloobDAO is a Da0_Da0 DAO that is governed by FloobDAO token holders.
+      FloobDAO token holders can create and edit stories around the Galactic
+      Floob storyline by creating a proposal.
+    </p>
+  </div>
+);
 
 const HeaderView: FC<HeaderProps> = ({ threads }) => {
   return (
     <div className="flex flex-row px-8 py-4 bg-black items-baseline gap-2">
       <div className="flex flex-row gap-8 items-baseline text-sm font-medium">
-        <div>What is Floob.zone?</div>
-        <div>What is Floob DAO?</div>
+        <div>What is Floob.zone and FloobDAO?</div>
         <div>Stories::</div>
       </div>
 
@@ -140,7 +165,11 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <HeaderView threads={threads ?? []} selected={threadId} />
+      <HeaderView
+        threads={threads ?? []}
+        selected={threadId}
+        onHeaderClick={() => {}}
+      />
       <div className="py-12">
         <div className="w-full flex items-center justify-center">
           <div className="flex flex-col">
