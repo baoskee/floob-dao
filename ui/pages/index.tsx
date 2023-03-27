@@ -91,15 +91,15 @@ export const HeaderView: FC<HeaderProps> = ({
   onHeaderClick,
 }) => {
   return (
-    <div className="flex flex-row px-8 py-4 bg-black items-baseline gap-2 overflow-x-scroll">
-      <div className="flex flex-row gap-8 items-baseline text-sm font-medium overflow-x-scroll">
+    <div className="top-0 left-0 w-screen flex px-8 py-4 bg-black overflow-x-scroll max-h-fit">
+      <div className="flex flex-row gap-8 items-baseline text-sm font-medium">
         {titles.map((t, i) => (
           <div
             key={i}
             onClick={() => onHeaderClick(i)}
             className={clsx(
               "text-sm text-primary cursor-pointer",
-              "opacity-50 hover:opacity-100 transition-opacity 100ms ease-in-out",
+              "opacity-50 hover:opacity-100 transition-opacity 100ms ease-in-out whitespace-nowrap",
               selected == i && "opacity-100"
             )}
           >
@@ -151,7 +151,7 @@ export const PageView: FC = ({ children }) => {
       <div className="py-12">
         <div className="w-full flex items-center justify-center">
           <div className="flex flex-col">
-            <div className="max-w-lg">{children}</div>
+            <div className="max-w-lg px-8">{children}</div>
           </div>
         </div>
       </div>
