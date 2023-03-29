@@ -18,10 +18,23 @@ const onSubmit = async ({
     addr,
     FLOOB_DAO_ADDR,
     {
-      create_thread: {
-        title: "Floob story",
-        description: "Floob story description",
-        content: ["Hello world"],
+      propose: {
+        msg: {
+          propose: {
+            title: "New Floob Story",
+            description: "Insert description here...",
+            msgs: [
+              // You need to create a wasm execute message here
+              {
+                create_thread: {
+                  title: "Floob story",
+                  description: "Floob story description",
+                  content: ["Hello world"],
+                },
+              },
+            ],
+          },
+        },
       },
     },
     "auto",
