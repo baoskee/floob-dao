@@ -1,6 +1,6 @@
 import { PageView } from ".";
 import { getKeplrFromWindow } from "@keplr-wallet/stores";
-import { CHAIN_ID, CHAIN_RPC_URL, FLOOB_DAO_ADDR } from "../lib/io";
+import { CHAIN_ID, CHAIN_RPC_URL, FLOOB_ADDR, FLOOB_DAO_PROPOSAL_ADDR } from "../lib/io";
 import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { useEffect, useState } from "react";
 import { GasPrice } from "@cosmjs/stargate";
@@ -14,9 +14,17 @@ const onSubmit = async ({
   signer: SigningCosmWasmClient;
   addr: string;
 }) => {
+  const wasmMsg = {
+    create_thread: {
+      title: "Floob story",
+      description: "Floob story description",
+      content: ["Hello world"],
+    },
+  };
+
   signer.execute(
     addr,
-    FLOOB_DAO_ADDR,
+    FLOOB_DAO_PROPOSAL_ADDR,
     {
       propose: {
         msg: {
@@ -26,10 +34,12 @@ const onSubmit = async ({
             msgs: [
               // You need to create a wasm execute message here
               {
-                create_thread: {
-                  title: "Floob story",
-                  description: "Floob story description",
-                  content: ["Hello world"],
+                wasm: {
+                  execute: {
+                    contract: FLOOB_ADDR,
+                    funds: [],
+                    msg: wasmMsg
+                  },
                 },
               },
             ],

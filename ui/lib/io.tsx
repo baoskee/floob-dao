@@ -6,8 +6,8 @@ import { Thread } from "../pages/index";
 // This changes for everyone's local Docker env
 export const FLOOB_ADDR =
   "juno1sz6rh5av98ed9d5edejv8vgv2t64schjvwrcwclw309r6hvy6ztssy8nqk";
-export const FLOOB_DAO_ADDR =
-  "juno15aka2ufg4xg6et76q3dg95q798eusphft0yuddl764kc2wfkxaxs43r32f";
+export const FLOOB_DAO_PROPOSAL_ADDR =
+  "juno182768g6lsl7fqpk8magmn4yqpjcndaeevju3uju80y2dkjnpqwtsrffpyr";
 export const CHAIN_ID = "juno-1";
 export const RPC_HOST = "https://rpc-juno.itastakers.com";
 export const RPC_PORT = "443";
