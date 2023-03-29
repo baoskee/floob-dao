@@ -1,12 +1,11 @@
 import { getThreadData, useAwaited } from "../../lib/io";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { RPC_HOST, RPC_PORT } from "../../lib/io";
-import { getThreads } from "../../lib/io";
-import { PageView, Thread } from "..";
-import clsx from "clsx";
+import { PageView } from "..";
 import { NavElem } from "../../lib/components";
 import { useRecoilValueLoadable } from "recoil";
 import { threadsSel } from "../../lib/atom";
+import { useRouter } from "next/router";
 
 type Storyline = {
   title: string;
@@ -39,23 +38,31 @@ const StorylineView = ({ storyline }: { storyline?: Storyline }) => {
   );
 };
 
-const Stories = () => {
+export const StoryPage = ({ id }: { id: number }) => {
+  const router = useRouter();
   const threads = useRecoilValueLoadable(threadsSel);
   const displayedThread = useAwaited(async () => {
     const client = await CosmWasmClient.connect(RPC_HOST + ":" + RPC_PORT);
     const thread = await getThreadData({
-      id: 0,
+      id,
       client,
     });
     return thread;
-  }, []);
+  }, [id]);
 
   return (
     <PageView>
       <div className="absolute top-0 left-0 flex flex-row w-full px-8 py-3">
         {threads.state == "hasValue"
           ? threads.contents.map((thread, i) => (
-              <NavElem selected={i == 0}>{thread.title}</NavElem>
+              <NavElem
+                selected={i == 0}
+                onClick={() => router.push(`/stories/${i}`)}
+              >
+                <p className="font-medium">
+                  {thread.title} 
+                </p>
+              </NavElem>
             ))
           : undefined}
       </div>
@@ -63,5 +70,7 @@ const Stories = () => {
     </PageView>
   );
 };
+
+const Stories = () => <StoryPage id={0} />;
 
 export default Stories;
