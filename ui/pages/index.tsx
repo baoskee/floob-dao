@@ -126,7 +126,12 @@ const HEADERS = [
   "New story",
 ];
 
-const HEADER_LINKS = ["/", "/stories", undefined, "/new"];
+const HEADER_LINKS = [
+  "/",
+  "/stories",
+  "https://daodao.zone/dao/juno15aka2ufg4xg6et76q3dg95q798eusphft0yuddl764kc2wfkxaxs43r32f#proposals",
+  "/new",
+];
 
 export const PageView: FC = ({ children }) => {
   const threads = useAwaited(async () => {
