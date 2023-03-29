@@ -111,14 +111,6 @@ export const HeaderView: FC<HeaderProps> = ({
   );
 };
 
-const onConnectWalletClick = async () => {
-  const keplr = await getKeplrFromWindow();
-  if (!keplr)
-    return alert("Connect wallet failed. Download Keplr wallet to continue");
-
-  await keplr.enable(CHAIN_ID);
-};
-
 const HEADERS = [
   "What is Floob.zone and FloobDAO?",
   "Floob Stories",
@@ -134,13 +126,7 @@ const HEADER_LINKS = [
 ];
 
 export const PageView: FC = ({ children }) => {
-  const threads = useAwaited(async () => {
-    const client = await CosmWasmClient.connect(RPC_HOST + ":" + RPC_PORT);
-    const threads = await getThreads({ client });
-    return threads as Thread[];
-  }, []);
   const router = useRouter();
-
   return (
     <div>
       <Head>
