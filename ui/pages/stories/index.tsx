@@ -5,6 +5,8 @@ import { getThreads } from "../../lib/io";
 import { PageView, Thread } from "..";
 import clsx from "clsx";
 import { NavElem } from "../../lib/components";
+import { useRecoilValueLoadable } from "recoil";
+import { threadsSel } from "../../lib/atom";
 
 type Storyline = {
   title: string;
@@ -38,11 +40,7 @@ const StorylineView = ({ storyline }: { storyline?: Storyline }) => {
 };
 
 const Stories = () => {
-  const threads = useAwaited(async () => {
-    const client = await CosmWasmClient.connect(RPC_HOST + ":" + RPC_PORT);
-    const threads = await getThreads({ client });
-    return threads as Thread[];
-  }, []);
+  const threads = useRecoilValueLoadable(threadsSel);
   const displayedThread = useAwaited(async () => {
     const client = await CosmWasmClient.connect(RPC_HOST + ":" + RPC_PORT);
     const thread = await getThreadData({
@@ -55,9 +53,11 @@ const Stories = () => {
   return (
     <PageView>
       <div className="absolute top-0 left-0 flex flex-row w-full px-8 py-3">
-        {threads?.map((thread, i) => (
-          <NavElem selected={i == 0}>{thread.title}</NavElem>
-        ))}
+        {threads.state == "hasValue"
+          ? threads.contents.map((thread, i) => (
+              <NavElem selected={i == 0}>{thread.title}</NavElem>
+            ))
+          : undefined}
       </div>
       <StorylineView storyline={displayedThread} />
     </PageView>

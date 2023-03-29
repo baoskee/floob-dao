@@ -1,7 +1,14 @@
+import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { getKeplrFromWindow } from "@keplr-wallet/stores";
 import { selector } from "recoil";
+import { getThreads, RPC_HOST, RPC_PORT, CHAIN_ID } from "./io";
 
-const CHAIN_ID = "juno-1";
+export type Thread = {
+  id: number;
+  title: string;
+  description: string;
+  content: string[];
+};
 
 export const walletAddrSel = selector({
   key: "wallet_addr",
@@ -16,5 +23,14 @@ export const walletAddrSel = selector({
     } catch {
       return undefined;
     }
+  },
+});
+
+export const threadsSel = selector({
+  key: "threads",
+  get: async () => {
+    const client = await CosmWasmClient.connect(RPC_HOST + ":" + RPC_PORT);
+    const threads = await getThreads({ client });
+    return threads as Thread[];
   },
 });
