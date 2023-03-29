@@ -63,7 +63,7 @@ const WhatIsFloobZone = () => (
     </p>
     <p>
       You can read the first story,{" "}
-      <Link href="https://floob.zone?id=0">{"How Floob came to power"}</Link>.
+      <Link href="/stories/0">{"How Floob came to power"}</Link>.
     </p>
     <p>
       This project is created and maintained by{" "}
@@ -155,7 +155,6 @@ export const PageView: FC = ({ children }) => {
           </div>
         </div>
       </div>
-      <div className="py-24"></div>
     </div>
   );
 };
