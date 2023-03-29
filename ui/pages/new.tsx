@@ -11,13 +11,11 @@ const NewStory = () => {
       <div className="max-w-lg flex flex-col justify-start items-start"> 
         {/* This keeps component from resizing. */}
         <div className="transparent w-[1000px]"/>
-        <div contentEditable="true" className="text-xl">
-          Title
+        <div contentEditable="true" className="text-xl w-full" data-ph="Floob story">
         </div>
-        <div contentEditable="true" className="text-secondary">
-          Description here.
+        <div contentEditable="true" className="text-secondary w-full" data-ph="Floob story description">
         </div>
-        <div contentEditable="true" className="py-4">
+        <div contentEditable="true" className="py-4 w-full" data-ph="All things come from humble beginnings...">
           {`Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
           eiusmod tempor incididunt ut labore et dolore magna aliqua. Morbi
           tincidunt ornare massa eget egestas purus viverra accumsan in. Leo
@@ -28,10 +26,10 @@ const NewStory = () => {
           Egestas diam in arcu cursus euismod quis viverra..`}
         </div>
 
-        <div>
-          <button className="bg-primary text-black px-4 py-2 rounded-md hover:text-white hover:bg-black"
+        <div className="py-4">
+          <button className="bg-primary text-black text-sm font-medium px-4 py-2 border border-transparent hover:text-white hover:bg-black hover:border-white"
           >
-            Submit
+            Submit Proposal
           </button>
         </div>
       </div>

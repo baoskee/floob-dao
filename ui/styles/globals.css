@@ -45,6 +45,10 @@ a {
 [contenteditable] {
   outline: transparent;
 }
+[contenteditable=true]:empty:before{
+  content:attr(data-ph);
+  color:grey;
+}
 
 * {
   box-sizing: border-box;
