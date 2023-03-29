@@ -34,6 +34,8 @@ const StorylineView = ({ storyline }: { storyline?: Storyline }) => {
           </div>
         ))}
       </div>
+      {/* Some bottom padding */}
+      <div className="py-12"/> 
     </div>
   );
 };
