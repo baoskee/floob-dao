@@ -1,8 +1,10 @@
+import { getThreadData, useAwaited } from "../../lib/io";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import { NextPage } from "next";
-import { useRouter } from "next/router";
-import { PageView } from "..";
-import { getThreadData, RPC_HOST, RPC_PORT, useAwaited } from "../../lib/io";
+import { RPC_HOST, RPC_PORT } from "../../lib/io";
+import { getThreads } from "../../lib/io";
+import { PageView, Thread } from "..";
+import clsx from "clsx";
+import { NavElem } from "../../lib/components";
 
 type Storyline = {
   title: string;
@@ -14,7 +16,7 @@ type Storyline = {
 // to be harder
 type Block = string;
 
-export const StorylineView = ({ storyline }: { storyline?: Storyline }) => {
+const StorylineView = ({ storyline }: { storyline?: Storyline }) => {
   if (!storyline) return <div></div>;
 
   const { title, description, content: blocks } = storyline;
@@ -35,24 +37,31 @@ export const StorylineView = ({ storyline }: { storyline?: Storyline }) => {
   );
 };
 
-const StoryPage: NextPage = () => {
-  const router = useRouter();
-  const id = parseInt(router.query.id as string) || 0;
-
+const Stories = () => {
+  const threads = useAwaited(async () => {
+    const client = await CosmWasmClient.connect(RPC_HOST + ":" + RPC_PORT);
+    const threads = await getThreads({ client });
+    return threads as Thread[];
+  }, []);
   const displayedThread = useAwaited(async () => {
     const client = await CosmWasmClient.connect(RPC_HOST + ":" + RPC_PORT);
     const thread = await getThreadData({
-      id: Math.max(id, 0),
+      id: 0,
       client,
     });
     return thread;
-  }, [id]);
+  }, []);
 
   return (
     <PageView>
+      <div className="absolute top-0 left-0 flex flex-row w-full px-8 py-3">
+        {threads?.map((thread, i) => (
+          <NavElem selected={i == 0}>{thread.title}</NavElem>
+        ))}
+      </div>
       <StorylineView storyline={displayedThread} />
     </PageView>
   );
 };
 
-export default StoryPage;
+export default Stories;

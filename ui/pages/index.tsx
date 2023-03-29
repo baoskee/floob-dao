@@ -41,7 +41,7 @@ const Link = ({ href, children }: { href: string; children: string }) => (
 );
 
 const WhatIsFloobZone = () => (
-  <div className="flex flex-col gap-2">
+  <div className="flex flex-col gap-2 max-w-lg">
     <h1 className="text-primary text-2xl font-bold">What is Floob.zone?</h1>
     <p>
       Floob is a community-driven, decentralized, and{" "}
@@ -119,6 +119,15 @@ const onConnectWalletClick = async () => {
   await keplr.enable(CHAIN_ID);
 };
 
+const HEADERS = [
+  "What is Floob.zone and FloobDAO?",
+  "Floob Stories",
+  "FloobDAO",
+  "New story",
+];
+
+const HEADER_LINKS = ["/", "/stories", undefined, "/new"];
+
 export const PageView: FC = ({ children }) => {
   const threads = useAwaited(async () => {
     const client = await CosmWasmClient.connect(RPC_HOST + ":" + RPC_PORT);
@@ -126,7 +135,6 @@ export const PageView: FC = ({ children }) => {
     return threads as Thread[];
   }, []);
   const router = useRouter();
-  const id = router.query.id ? parseInt(router.query.id as string) : undefined;
 
   return (
     <div>
@@ -137,21 +145,14 @@ export const PageView: FC = ({ children }) => {
       </Head>
 
       <HeaderView
-        titles={
-          threads
-            ? [
-                "What is Floob.zone and FloobDAO?",
-                ...threads.map((t) => t.title),
-              ]
-            : ["What is Floob.zone and FloobDAO?"]
-        }
-        selected={id != undefined ? id + 1 : 0}
-        onHeaderClick={(i) => i == 0 ? router.push('/') : router.push(`/stories/${i - 1}`)}
+        titles={HEADERS}
+        selected={HEADER_LINKS.indexOf(router.pathname)}
+        onHeaderClick={(i) => router.push(`${HEADER_LINKS[i]}`)}
       />
-      <div className="py-12">
+      <div className="py-12 relative">
         <div className="w-full flex items-center justify-center">
           <div className="flex flex-col">
-            <div className="max-w-lg px-8">{children}</div>
+            <div className="px-8">{children}</div>
           </div>
         </div>
       </div>
