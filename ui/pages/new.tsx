@@ -1,11 +1,17 @@
 import { PageView } from ".";
 import { getKeplrFromWindow } from "@keplr-wallet/stores";
-import { CHAIN_ID, CHAIN_RPC_URL, FLOOB_ADDR, FLOOB_DAO_PROPOSAL_ADDR } from "../lib/io";
+import {
+  CHAIN_ID,
+  CHAIN_RPC_URL,
+  FLOOB_ADDR,
+  FLOOB_DAO_PROPOSAL_ADDR,
+} from "../lib/io";
 import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { useEffect, useState } from "react";
 import { GasPrice } from "@cosmjs/stargate";
 import { Loadable, useRecoilValueLoadable } from "recoil";
 import { walletAddrSel } from "../lib/atom";
+import { toBase64, toUtf8 } from "@cosmjs/encoding";
 
 const onSubmit = async ({
   signer,
@@ -21,34 +27,36 @@ const onSubmit = async ({
       content: ["Hello world"],
     },
   };
-
-  signer.execute(
-    addr,
-    FLOOB_DAO_PROPOSAL_ADDR,
-    {
-      propose: {
-        msg: {
-          propose: {
-            title: "New Floob Story",
-            description: "Insert description here...",
-            msgs: [
-              // You need to create a wasm execute message here
-              {
-                wasm: {
-                  execute: {
-                    contract: FLOOB_ADDR,
-                    funds: [],
-                    msg: wasmMsg
-                  },
+  const daodaoMsg = {
+    propose: {
+      msg: {
+        propose: {
+          title: "New Floob Story",
+          description: "Insert description here",
+          msgs: [
+            // You need to create a wasm execute message here
+            {
+              wasm: {
+                execute: {
+                  contract_addr: FLOOB_ADDR,
+                  funds: [],
+                  msg: toBase64(toUtf8(JSON.stringify(wasmMsg))),
                 },
               },
-            ],
-          },
+            },
+          ],
         },
       },
     },
+  };
+  console.log(daodaoMsg)
+
+  const res = await signer.execute(
+    addr,
+    FLOOB_DAO_PROPOSAL_ADDR,
+    daodaoMsg,
     "auto",
-    undefined,
+    "0.0025ujuno",
     undefined
   );
 };
