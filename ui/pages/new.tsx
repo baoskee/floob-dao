@@ -70,7 +70,10 @@ export const useSigner = (): SigningCosmWasmClient | undefined => {
   const [signer, setSigner] = useState<SigningCosmWasmClient | undefined>();
   useEffect(() => {
     const loadSigner = async () => {
-      const keplr = (await getKeplrFromWindow())!;
+      const keplr = (await getKeplrFromWindow());
+      if (!keplr)
+        return
+
       await keplr.enable(CHAIN_ID);
       const offlineSigner = keplr.getOfflineSigner(CHAIN_ID);
       const client = await SigningCosmWasmClient.connectWithSigner(
@@ -126,14 +129,9 @@ const NewStory = () => {
           data-ph="All things come from humble beginnings..."
           ref={contentRef}
         >
-          {`Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Morbi
-          tincidunt ornare massa eget egestas purus viverra accumsan in. Leo
-          integer malesuada nunc vel risus. Id porta nibh venenatis cras sed
-          felis. Sed risus pretium quam vulputate dignissim. Viverra maecenas
-          accumsan lacus vel facilisis volutpat est velit. Viverra mauris in
-          aliquam sem fringilla. Vitae justo eget magna fermentum iaculis eu.
-          Egestas diam in arcu cursus euismod quis viverra..`}
+          {`In a far-off corner of the universe lies a vast and sprawling empire, ruled with an iron fist 
+          by the notorious intergalactic dictator, Floob. For years, he has wielded his power with impunity, 
+          subjugating entire planets and civilizations to his will, crushing all those who dared to oppose him.`}
         </div>
 
         <div className="py-4">
