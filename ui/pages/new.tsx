@@ -7,34 +7,39 @@ import {
   FLOOB_DAO_PROPOSAL_ADDR,
 } from "../lib/io";
 import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import { useEffect, useState } from "react";
+import { createRef, useEffect, useRef, useState } from "react";
 import { GasPrice } from "@cosmjs/stargate";
 import { Loadable, useRecoilValueLoadable } from "recoil";
 import { walletAddrSel } from "../lib/atom";
 import { toBase64, toUtf8 } from "@cosmjs/encoding";
 
+type ThreadData = {
+  title: string;
+  description: string;
+  content: string[];
+};
+
 const onSubmit = async ({
   signer,
   addr,
+  data,
 }: {
   signer: SigningCosmWasmClient;
   addr: string;
+  data: ThreadData;
 }) => {
   const wasmMsg = {
     create_thread: {
-      title: "Floob story",
-      description: "Floob story description",
-      content: ["Hello world"],
+      ...data,
     },
   };
   const daodaoMsg = {
     propose: {
       msg: {
         propose: {
-          title: "New Floob Story",
-          description: "Insert description here",
+          title: `New Floob Story - ${data.title}`,
+          description: `${data.description}`,
           msgs: [
-            // You need to create a wasm execute message here
             {
               wasm: {
                 execute: {
@@ -49,7 +54,7 @@ const onSubmit = async ({
       },
     },
   };
-  console.log(daodaoMsg)
+  console.log(daodaoMsg);
 
   const res = await signer.execute(
     addr,
@@ -94,26 +99,32 @@ export const getLoadable = <T,>(loadable: Loadable<T>): T | undefined =>
 const NewStory = () => {
   const signer = useSigner();
   const walletAddr = getLoadable(useRecoilValueLoadable(walletAddrSel));
+  const titleRef = createRef<HTMLDivElement>();
+  const desRef = createRef<HTMLDivElement>();
+  const contentRef = createRef<HTMLDivElement>();
 
   return (
     <PageView>
       <div className="max-w-lg flex flex-col justify-start items-start">
         {/* This keeps component from resizing. */}
-        <div className="transparent w-[1000px]" />
+        <div className="transparent w-[1000px] max-w-lg" />
         <div
           contentEditable="true"
           className="text-xl w-full"
           data-ph="Floob story"
-        ></div>
+          ref={titleRef}
+        />
         <div
           contentEditable="true"
           className="text-secondary w-full"
           data-ph="Floob story description"
-        ></div>
+          ref={desRef}
+        />
         <div
           contentEditable="true"
           className="py-4 w-full"
           data-ph="All things come from humble beginnings..."
+          ref={contentRef}
         >
           {`Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
           eiusmod tempor incididunt ut labore et dolore magna aliqua. Morbi
@@ -128,9 +139,22 @@ const NewStory = () => {
         <div className="py-4">
           <button
             className="bg-primary text-black text-sm font-medium px-4 py-2 border border-transparent hover:text-white hover:bg-black hover:border-white"
-            onClick={() =>
-              signer && walletAddr && onSubmit({ signer, addr: walletAddr })
-            }
+            onClick={() => {
+              const title = titleRef.current?.innerText ?? "";
+              const description = desRef.current?.innerText ?? "";
+              const content =
+                contentRef.current?.innerText
+                  .split("\n")
+                  .filter((x) => x != "") || [];
+
+              signer &&
+                walletAddr &&
+                onSubmit({
+                  signer,
+                  addr: walletAddr,
+                  data: { title, description, content },
+                });
+            }}
           >
             Submit Proposal
           </button>
