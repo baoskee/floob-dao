@@ -58,6 +58,7 @@ export const StoryPage = ({ id }: { id: number }) => {
         {threads.state == "hasValue"
           ? threads.contents.map((thread, i) => (
               <NavElem
+                key={i}
                 selected={i == 0}
                 onClick={() => router.push(`/stories/${i}`)}
               >
