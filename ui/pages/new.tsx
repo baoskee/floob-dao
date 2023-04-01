@@ -54,14 +54,13 @@ const onSubmit = async ({
       },
     },
   };
-  console.log(daodaoMsg);
 
   const res = await signer.execute(
     addr,
     FLOOB_DAO_PROPOSAL_ADDR,
     daodaoMsg,
     "auto",
-    "0.0025ujuno",
+    undefined,
     undefined
   );
 };
