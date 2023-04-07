@@ -54,12 +54,12 @@ export const StoryPage = ({ id }: { id: number }) => {
 
   return (
     <PageView>
-      <div className="absolute top-0 left-0 flex flex-row w-full px-8 py-3">
+      <div className="absolute top-0 left-0 flex flex-row w-full px-8 py-3 gap-3">
         {threads.state == "hasValue"
           ? threads.contents.map((thread, i) => (
               <NavElem
                 key={i}
-                selected={i == 0}
+                selected={i == id}
                 onClick={() => router.push(`/stories/${i}`)}
               >
                 <p className="font-medium">
