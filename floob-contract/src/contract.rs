@@ -7,7 +7,7 @@ use cosmwasm_std::{
 use cw2::set_contract_version;
 
 use crate::error::ContractError;
-use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
+use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg, MigrateMsg};
 use crate::state::{Thread, ADMIN, THREADS, THREAD_COUNT};
 
 // version info for migration info
@@ -44,6 +44,7 @@ pub fn execute(
             title,
             description,
             content,
+            img_url
         } => {
             let id = advance_posts_count(deps.storage)?;
             THREADS.save(
@@ -53,6 +54,7 @@ pub fn execute(
                     title,
                     description,
                     content,
+                    img_url,
                 },
             )?;
 
@@ -65,6 +67,7 @@ pub fn execute(
             title,
             description,
             content,
+            img_url
         } => {
             let count = THREAD_COUNT.may_load(deps.storage)?.unwrap_or_default();
             // Watch overflow here
@@ -78,6 +81,7 @@ pub fn execute(
                     title,
                     description,
                     content,
+                    img_url
                 },
             )?;
             Ok(Response::default()
@@ -93,7 +97,7 @@ pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
         QueryMsg::GetThread { id } => {
             let post = THREADS.load(deps.storage, id)?;
             Ok(to_binary(&post)?)
-        },
+        }
         QueryMsg::GetThreadsCreated { start, end } => {
             let count = THREAD_COUNT.may_load(deps.storage)?.unwrap_or_default();
             let start = start.unwrap_or(0);
@@ -105,6 +109,13 @@ pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
             Ok(to_binary(&threads)?)
         }
     }
+}
+
+// TODO(!): How do you test migrations? It seems super suss 
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn migrate(_deps: DepsMut, _env: Env, _msg: MigrateMsg) -> Result<Response, ContractError> {
+    // V1 did not have `img_url` attribute 
+    Ok(Response::default())
 }
 
 /// MARK: Helpers
@@ -162,6 +173,7 @@ mod tests {
             title: "Hello".to_string(),
             description: "World".to_string(),
             content: vec!["Hello World".to_string()],
+            img_url: None
         };
         let info = mock_info("creator", &coins(1000, "earth"));
         let res = execute(deps.as_mut(), mock_env(), info, msg).unwrap();
@@ -188,19 +200,20 @@ mod tests {
             admin: "creator".to_string(),
         };
         let info = mock_info("creator", &coins(1000, "earth"));
-        instantiate(deps.as_mut(), mock_env(), info, msg).unwrap(); 
+        instantiate(deps.as_mut(), mock_env(), info, msg).unwrap();
         // Thread creation fails for non-admin
         let msg = ExecuteMsg::CreateThread {
             title: "Hello".to_string(),
             description: "World".to_string(),
             content: vec!["Hello World".to_string()],
+            img_url: None
         };
         let info = mock_info("non-admin", &coins(1000, "earth"));
         let res = execute(deps.as_mut(), mock_env(), info, msg.clone());
         match res {
             Err(ContractError::Unauthorized {}) => {}
             _ => panic!("Expected Unauthorized error"),
-        } 
+        }
         // Thread creation works for admin
         let info = mock_info("creator", &coins(1000, "earth"));
         let res = execute(deps.as_mut(), mock_env(), info, msg).unwrap();
@@ -211,6 +224,7 @@ mod tests {
             title: "Hello".to_string(),
             description: "World".to_string(),
             content: vec!["Hello World".to_string()],
+            img_url: None
         };
         let info = mock_info("non-admin", &coins(1000, "earth"));
         let res = execute(deps.as_mut(), mock_env(), info, msg.clone());
@@ -235,6 +249,7 @@ mod tests {
             title: "Hello".to_string(),
             description: "World".to_string(),
             content: vec!["Hello World".to_string()],
+            img_url: None
         };
         let info = mock_info("creator", &coins(1000, "earth"));
         let res = execute(deps.as_mut(), mock_env(), info, msg);
@@ -249,6 +264,7 @@ mod tests {
 
             // Content is a vector of long paragraphs
             content: vec!["Hello World".to_string()],
+            img_url: None
         };
         let info = mock_info("creator", &coins(1000, "earth"));
         execute(deps.as_mut(), mock_env(), info, msg).unwrap();
@@ -267,6 +283,7 @@ mod tests {
                 .iter()
                 .map(|s| s.to_string())
                 .collect(),
+            img_url: None
         };
         let info = mock_info("creator", &coins(1000, "earth"));
         execute(deps.as_mut(), mock_env(), info, msg).unwrap();
@@ -303,6 +320,7 @@ mod tests {
             title: "Hello".to_string(),
             description: "World".to_string(),
             content: vec!["Hello World".to_string()],
+            img_url: None
         };
         let info = mock_info("creator", &coins(1000, "earth"));
         execute(deps.as_mut(), mock_env(), info, msg).unwrap();
@@ -310,19 +328,24 @@ mod tests {
             title: "Hello".to_string(),
             description: "World".to_string(),
             content: vec!["Hello World 2".to_string()],
-        }; 
+            img_url: None
+        };
         let info = mock_info("creator", &coins(1000, "earth"));
         execute(deps.as_mut(), mock_env(), info, msg).unwrap();
         let msg = ExecuteMsg::CreateThread {
             title: "Hello".to_string(),
             description: "World".to_string(),
             content: vec!["Hello World 3".to_string()],
+            img_url: None
         };
         let info = mock_info("creator", &coins(1000, "earth"));
         execute(deps.as_mut(), mock_env(), info, msg).unwrap();
         // Assert content is updated
-        let msg = QueryMsg::GetThreadsCreated { start: None, end: None  };
-        let res = query(deps.as_ref(), mock_env(), msg).unwrap();        
+        let msg = QueryMsg::GetThreadsCreated {
+            start: None,
+            end: None,
+        };
+        let res = query(deps.as_ref(), mock_env(), msg).unwrap();
         let value: Vec<Thread> = from_binary(&res).unwrap();
         assert_eq!(3, value.len());
         assert_eq!("Hello World", value[0].content[0]);
@@ -330,21 +353,30 @@ mod tests {
         assert_eq!("Hello World 3", value[2].content[0]);
 
         // Test query from start 1, end 2
-        let msg = QueryMsg::GetThreadsCreated { start: Some(1), end: Some(2) };
+        let msg = QueryMsg::GetThreadsCreated {
+            start: Some(1),
+            end: Some(2),
+        };
         let res = query(deps.as_ref(), mock_env(), msg).unwrap();
         let value: Vec<Thread> = from_binary(&res).unwrap();
         assert_eq!(1, value.len());
         assert_eq!("Hello World 2", value[0].content[0]);
 
         // Test query start 1
-        let msg = QueryMsg::GetThreadsCreated { start: Some(1), end: None };
+        let msg = QueryMsg::GetThreadsCreated {
+            start: Some(1),
+            end: None,
+        };
         let res = query(deps.as_ref(), mock_env(), msg).unwrap();
         let value: Vec<Thread> = from_binary(&res).unwrap();
         assert_eq!(2, value.len());
         assert_eq!("Hello World 2", value[0].content[0]);
         assert_eq!("Hello World 3", value[1].content[0]);
         // Test end 2 is exclusive
-        let msg = QueryMsg::GetThreadsCreated { start: None, end: Some(2) };
+        let msg = QueryMsg::GetThreadsCreated {
+            start: None,
+            end: Some(2),
+        };
         let res = query(deps.as_ref(), mock_env(), msg).unwrap();
         let value: Vec<Thread> = from_binary(&res).unwrap();
         assert_eq!(2, value.len());

@@ -12,12 +12,14 @@ pub enum ExecuteMsg {
         title: String,
         description: String,
         content: Vec<String>,
+        img_url: Option<String>,
     },
     EditThread {
         id: u64,
         title: String,
         description: String,
         content: Vec<String>,
+        img_url: Option<String>,
     },
 }
 
@@ -32,3 +34,6 @@ pub enum QueryMsg {
         end: Option<u64>,
     },
 }
+
+#[cw_serde]
+pub enum MigrateMsg {}
